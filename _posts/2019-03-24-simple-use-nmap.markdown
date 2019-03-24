@@ -1,3 +1,9 @@
+---
+layout: post
+title: simple use of nmap
+data: 2019-03-24
+tag: nmap
+---
 # nmap的简单使用
 
 ```bash
