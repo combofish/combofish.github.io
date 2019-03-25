@@ -1,0 +1,15 @@
+---
+layout: post
+title:  "Simple use of stat command"
+date:   2019-03-25
+tag: linux command stat
+---
+# stat
+## 获取特定文件或文件系统的详细状态。  
+可以看到修改（modify）和变更（change）以及访问（access）,还有文件的许可权限等。  
+## 也可以查看目录的详细信息
+可以看到关于链接（links）数量的额外详情。
+## 查看一个文件系统的详细信息
+加上 -f 参数，可以显示文件系统的状态。  
+
+
