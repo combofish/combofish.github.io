@@ -17,7 +17,7 @@ categories: emacs org-mode
     4.  [代码块的传参数](#org42db4de)
     5.  [内联(In-line)的代码块](#org4aa3f6c)
 
-前沿，最近多了解了下org-mode 的babel, 整理了如下文章，原文参见
+前言，最近多了解了下org-mode 的babel, 整理了如下文章，原文参见
 [原文](https://brantou.github.io/2017/04/01/babel-intro/)
 
 
