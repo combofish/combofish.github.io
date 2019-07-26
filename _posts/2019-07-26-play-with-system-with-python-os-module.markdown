@@ -4,6 +4,7 @@ title: "Play with system with python os module"
 date: 2019-7-26
 tag: python os time
 ---
+原文是用org格式写的，转成markdown格式后可读性稍有下降，有心的读者可前往[原文](https://github.com/combofish/carve-in-mind/blob/master/python_os.org)
 # Table of Contents
 
 1.  [OS 模块](#orgf7b3469)
