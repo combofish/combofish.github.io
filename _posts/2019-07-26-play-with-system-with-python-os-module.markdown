@@ -5,78 +5,89 @@ date: 2019-7-26
 tag: python os time
 ---
 原文是用org格式写的，转成markdown格式后可读性稍有下降，有心的读者可前往[原文](https://github.com/combofish/carve-in-mind/blob/master/python_os.org)
+
 # Table of Contents
 
-1.  [OS 模块](#orgf7b3469)
-2.  [文件](#org7619ce1)
-    1.  [open](#orgf430668)
-3.  [目录](#orgc90e9c7)
-4.  [程序和进程](#org19d02fa)
-    1.  [使用subprocess创建进程](#org4ee2a5b)
-    2.  [使用 multiprocessing 创建进程](#orge04c5fa)
-    3.  [使用 terminate() 终止程序](#org98a8ab4)
-5.  [日期和时间](#org4b19846)
-    1.  [datetime 模块](#orgfb47bf4)
-    2.  [time 模块](#org1fbebb8)
-    3.  [读写日期和时间](#org5643ca2)
-    4.  [locale](#org5e8dbae)
+1.  [OS 模块](#org3ad567e)
+2.  [文件](#orgcd9aa56)
+1.  [open](#orga1f1fc8)
+3.  [目录](#org77b404a)
+4.  [程序和进程](#org16f5c80)
+1.  [使用subprocess创建进程](#orgd580e9d)
+2.  [使用 multiprocessing 创建进程](#org2393176)
+3.  [使用 terminate() 终止程序](#orgae2b900)
+5.  [日期和时间](#org94c788d)
+1.  [datetime 模块](#org8fe57e3)
+2.  [time 模块](#org77d0868)
+3.  [读写日期和时间](#org4cbe8a2)
+4.  [locale](#orgf305e0b)
 
 
-<a id="orgf7b3469"></a>
+<a id="org3ad567e"></a>
 
 # OS 模块
 
 operating system
 
 
-<a id="org7619ce1"></a>
+<a id="orgcd9aa56"></a>
 
 # 文件
 
 
-<a id="orgf430668"></a>
+<a id="orga1f1fc8"></a>
 
 ## open
 
-    import os
-    
-    fout = open('oops.txt','wt')
-    print('Oops, I create a file.', file = fout)
-    fout.close()
+```python
+import os
+
+fout = open('oops.txt','wt')
+print('Oops, I create a file.', file = fout)
+fout.close()
+```
 
 用这个文件来进行一些测试
 
-    os.path.exists('oops.txt')
-    os.path.exists('./oops.txt')
-    os.path.exists('waffles')
-    os.path.exists('.')
-    os.path.exists('..')
+```python
+os.path.exists('oops.txt')
+os.path.exists('./oops.txt')
+os.path.exists('waffles')
+os.path.exists('.')
+os.path.exists('..')
+```
 
 -   os.path.exists() 检查文件是否存在
 -   os.path.isfile() 检查是否为文件
 -   os.path.ifabs()  判断参数是否是绝对路径
 
-    name = 'oops.txt'
-    print(os.path.isfile(name))
-    print(os.path.isdir(name))
-    print(os.path.isabs('/name'))
-    print(os.path.isabs('name'))
+```python
+name = 'oops.txt'
+print(os.path.isfile(name))
+print(os.path.isdir(name))
+print(os.path.isabs('/name'))
+print(os.path.isabs('name'))
+```
 
 -   shutil.copy 复制文件
 -   shutil.move 复制一个文件并删除源文件
 
-    import shutil
-    shutil.copy('oops.txt','ohno.txt')
-    print(os.path.exists('ohno.txt'))
-    os.rename('ohno.txt','ohwell.txt')
-    print(os.path.exists('ohno.txt'),os.path.exists('ohwell.txt'))
+```python
+import shutil
+shutil.copy('oops.txt','ohno.txt')
+print(os.path.exists('ohno.txt'))
+os.rename('ohno.txt','ohwell.txt')
+print(os.path.exists('ohno.txt'),os.path.exists('ohwell.txt'))
+```
 
 -   os.link() 创建硬链接
 -   os.symlink() 创建符号链接
 
-    os.link('oops.txt','yikes.txt')
-    os.symlink('oops.txt','jeepers.txt')
-    print(os.path.isfile('yikes.txt'),os.path.islink('jeepers.txt'))
+```python
+os.link('oops.txt','yikes.txt')
+os.symlink('oops.txt','jeepers.txt')
+print(os.path.isfile('yikes.txt'),os.path.islink('jeepers.txt'))
+```
 
 -   os.chmod() 修改权限
 -   os.chown() 修改所有者
@@ -84,17 +95,18 @@ operating system
 -   os.path.realpath() 获取符号链接的路径名
 -   os.remove() 删除文件
 
-    os.chmod('oops.txt',0o400)
-    uid = 5
-    gid = 22 
-    #os.chown('oops.txt',uid,gid)
-    print("abspath: ", os.path.abspath('oops.txt'), "\nrealpath: ",\
-          os.path.realpath('jeepers.txt'))
-    os.remove('oops.txt')
-    print(os.path.exists('oops.txt'))
+```python
+os.chmod('oops.txt',0o400)
+uid = 5
+gid = 22 
+#os.chown('oops.txt',uid,gid)
+print("abspath: ", os.path.abspath('oops.txt'), "\nrealpath: ",\
+os.path.realpath('jeepers.txt'))
+os.remove('oops.txt')
+print(os.path.exists('oops.txt'))
+```
 
-
-<a id="orgc90e9c7"></a>
+<a id="org77b404a"></a>
 
 # 目录
 
@@ -104,31 +116,32 @@ operating system
 -   os.chdir() 修改当前目录
 -   glob.glob() 列出匹配的文件
 
-    import os
-    os.mkdir('poem')
-    print(os.path.exists('poem'))
-    os.rmdir('poem')
-    print(os.path.exists('poem'))
-    
-    os.mkdir('poem')
-    print(os.listdir('poem'))
-    os.mkdir('poem/mcintyre')
-    print(os.listdir('poem'))
-    
-    fout = open('poem/mcintyre/the_good_main','wt')
-    fout.write('''Cheerful and heppy was his mood,
-    He to the poor was kind and good.''')
-    fout.close()
-    
-    print(os.listdir('poem/mcintyre'))
-    os.chdir('poem')
-    print(os.listdir('mcintyre'))
-    
-    import glob
-    print(glob.glob('m*'),glob.glob('??'),glob.glob('m??????e'),glob.glob('[klm]*e'))
+```python
+import os
+os.mkdir('poem')
+print(os.path.exists('poem'))
+os.rmdir('poem')
+print(os.path.exists('poem'))
 
+os.mkdir('poem')
+print(os.listdir('poem'))
+os.mkdir('poem/mcintyre')
+print(os.listdir('poem'))
 
-<a id="org19d02fa"></a>
+fout = open('poem/mcintyre/the_good_main','wt')
+fout.write('''Cheerful and heppy was his mood,
+He to the poor was kind and good.''')
+fout.close()
+
+print(os.listdir('poem/mcintyre'))
+os.chdir('poem')
+print(os.listdir('mcintyre'))
+
+import glob
+print(glob.glob('m*'),glob.glob('??'),glob.glob('m??????e'),glob.glob('[klm]*e'))
+```
+
+<a id="org16f5c80"></a>
 
 # 程序和进程
 
@@ -140,12 +153,13 @@ operating system
 -   os.getuid() 获取我的用户ID
 -   os.getgid() 获取我的用户组ID
 
-    import os 
-    print("pid: ", os.getpid(), " \ncwd: ",os.getcwd(), " \nuid ", os.getuid(),\
-    "gid: ", os.getgid())
+```python
+import os 
+print("pid: ", os.getpid(), " \ncwd: ",os.getcwd(), " \nuid ", os.getuid(),\
+"gid: ", os.getgid())
+```
 
-
-<a id="org4ee2a5b"></a>
+<a id="orgd580e9d"></a>
 
 ## 使用subprocess创建进程
 
@@ -154,61 +168,64 @@ operating system
 -   subprocess.getstatusoutput() 获取其他程序的退出状态，返回一个包含状态码和输出的元组。
 -   subprocess.call() 获取推出状态
 
-    import subprocess
-    print('date: ',subprocess.getoutput('date'),\
-          '\n使用管道： ',subprocess.getoutput('date -u | wc'),\
-          "\ndate: ", subprocess.check_output(['date','-u']),\
-          "\n获取退出状态： ",subprocess.getstatusoutput('date'),\
-          "\n只想要退出状态： ", subprocess.call('date'),
-          "\n运行带参数的程序：date -u ",subprocess.call('date -u',shell=True),\
-          "\n运行带参数的程序：date -u ",subprocess.call(['date','-u']))
+```python
+import subprocess
+print('date: ',subprocess.getoutput('date'),\
+'\n使用管道： ',subprocess.getoutput('date -u | wc'),\
+"\ndate: ", subprocess.check_output(['date','-u']),\
+"\n获取退出状态： ",subprocess.getstatusoutput('date'),\
+"\n只想要退出状态： ", subprocess.call('date'),
+"\n运行带参数的程序：date -u ",subprocess.call('date -u',shell=True),\
+"\n运行带参数的程序：date -u ",subprocess.call(['date','-u']))
+```
 
-
-<a id="orge04c5fa"></a>
+<a id="org2393176"></a>
 
 ## 使用 multiprocessing 创建进程
 
 -   multiprocessing.Process(target= ,args=( ,)) 创建一个新的进程
 
-    import os
-    import multiprocessing
-    
-    def whoami(what):
-        print("Process %s says: %s" % (os.getpid(), what))
-    
-    whoami("I'm the main program")
-    for n in range(4):
-        p = multiprocessing.Process(target=whoami,args=("I'm function %s" % n,))
-        p.start()
+```python
+import os
+import multiprocessing
 
+def whoami(what):
+print("Process %s says: %s" % (os.getpid(), what))
 
-<a id="org98a8ab4"></a>
+whoami("I'm the main program")
+for n in range(4):
+p = multiprocessing.Process(target=whoami,args=("I'm function %s" % n,))
+p.start()
+```
+
+<a id="orgae2b900"></a>
 
 ## 使用 terminate() 终止程序
 
-    import os
-    import multiprocessing
-    import time
-    
-    def whoami(what):
-        print("I'm %s, in process %s " % (what, os.getpid()))
-    
-    def loopy(name):
-        whoami(name)
-        start = 1
-        stop = 1000000
-        for num in range(stop):
-    	print("\tNumber %s of %s. Honk!" % (num, stop))
-    	time.sleep(1)
-    
-    whoami('main')
-    p = multiprocessing.Process(target=loopy,args=('loopy',))
-    p.start()
-    time.sleep(6)
-    p.terminate()
+```python
+import os
+import multiprocessing
+import time
 
+def whoami(what):
+print("I'm %s, in process %s " % (what, os.getpid()))
 
-<a id="org4b19846"></a>
+def loopy(name):
+whoami(name)
+start = 1
+stop = 1000000
+for num in range(stop):
+print("\tNumber %s of %s. Honk!" % (num, stop))
+time.sleep(1)
+
+whoami('main')
+p = multiprocessing.Process(target=loopy,args=('loopy',))
+p.start()
+time.sleep(6)
+p.terminate()
+```
+
+<a id="org94c788d"></a>
 
 # 日期和时间
 
@@ -217,7 +234,7 @@ python 的标准库中有很多和日期和时间的模块： datetime, time, ca
 -   calendar.isleap() 检测是否是闰年
 
 
-<a id="orgfb47bf4"></a>
+<a id="org8fe57e3"></a>
 
 ## datetime 模块
 
@@ -227,70 +244,71 @@ python 的标准库中有很多和日期和时间的模块： datetime, time, ca
 -   time 处理时，分，妙，毫秒
 -   datetime 处理日期和时间同时出现的情况
 -   datedelta 处理日期和/或时间间隔
-    
-        from datetime import date
-        halloween = date(2017,9,10)
-        print('halloween: ',halloween,\
-              "\nday: ",halloween.day,\
-              "\nmonth: ",halloween.month,\
-              "\nyear: ",halloween.year,\
-              "\nisoformat: ",halloween.isoformat(),\
-              "\n")
-        
-        now = date.today()
-        
-        from datetime import timedelta
-        one_day = timedelta(days = 1)
-        tomorrow = now + one_day
-        yesterday = now - one_day
-        
-        print('now: ', now,\
-              "\ntomorrow: ", tomorrow,\
-              "\nnow + 17days: ", now + 17 * one_day,\
-              "\nyesterday: ", yesterday,\
-              "\ndate.min: ",date.min,\
-              "\ndate.max: ",date.max,\
-              "\n"
-        )
-        
-        from datetime import time
-        
-        noon = time(12,0,0)
-        
-        print("noon: ",noon,\
-              "\nnoon.hour: ",noon.hour,\
-              "\nnoon.minute: ",noon.minute,\
-              "\nnoon.second: ",noon.second,\
-              "\nnoon.microsecond",noon.microsecond,\
-              "\n")
-        
-        from datetime import datetime
-        
-        some_day = datetime(2017,5,7,2,45,5,8)
-        now = datetime.now()
-        
-        print('some_day: ',some_day,\
-              "\nnow: ",now,\
-              '\nisoformat: ',some_day.isoformat(),\
-              "\nnow.month: ",now.month,\
-              "\nnow.day: ",now.day,\
-              "\nnow.hour: ",now.hour,\
-              "\nnow.minute: ",now.minute,\
-              "\nnow.second: ",now.second,\
-              "\nnow.microsecond: ",now.microsecond,\
-              "\n"
-        )
-        
-        noon = time(12)
-        this_today = date.today()
-        noon_today = datetime.combine(this_today,noon)
-        print('combine time: ',noon_today,\
-              "\ndate: ",noon_today.date(),\
-              "\ntime: ",noon_today.time()
-        )
 
+```python
+from datetime import date
+halloween = date(2017,9,10)
+print('halloween: ',halloween,\
+"\nday: ",halloween.day,\
+"\nmonth: ",halloween.month,\
+"\nyear: ",halloween.year,\
+"\nisoformat: ",halloween.isoformat(),\
+"\n")
 
-<a id="org1fbebb8"></a>
+now = date.today()
+
+from datetime import timedelta
+one_day = timedelta(days = 1)
+tomorrow = now + one_day
+yesterday = now - one_day
+
+print('now: ', now,\
+"\ntomorrow: ", tomorrow,\
+"\nnow + 17days: ", now + 17 * one_day,\
+"\nyesterday: ", yesterday,\
+"\ndate.min: ",date.min,\
+"\ndate.max: ",date.max,\
+"\n"
+)
+
+from datetime import time
+
+noon = time(12,0,0)
+
+print("noon: ",noon,\
+"\nnoon.hour: ",noon.hour,\
+"\nnoon.minute: ",noon.minute,\
+"\nnoon.second: ",noon.second,\
+"\nnoon.microsecond",noon.microsecond,\
+"\n")
+
+from datetime import datetime
+
+some_day = datetime(2017,5,7,2,45,5,8)
+now = datetime.now()
+
+print('some_day: ',some_day,\
+"\nnow: ",now,\
+'\nisoformat: ',some_day.isoformat(),\
+"\nnow.month: ",now.month,\
+"\nnow.day: ",now.day,\
+"\nnow.hour: ",now.hour,\
+"\nnow.minute: ",now.minute,\
+"\nnow.second: ",now.second,\
+"\nnow.microsecond: ",now.microsecond,\
+"\n"
+)
+
+noon = time(12)
+this_today = date.today()
+noon_today = datetime.combine(this_today,noon)
+print('combine time: ',noon_today,\
+"\ndate: ",noon_today.date(),\
+"\ntime: ",noon_today.time()
+)
+```
+
+<a id="org77d0868"></a>
 
 ## time 模块
 
@@ -302,73 +320,75 @@ python 有一个单独的 **time** 模块，纪元值是从1970年1月1日0点�
 -   time.gmtime() 返回UTC时间
 -   time.mktime() 将struct<sub>time</sub> 对象转换回纪元值，但struct<sub>time只能精确到妙</sub>。
 
-    import time
-    
-    now = time.time()
-    time_str = time.ctime(now)
-    tm = time.localtime(now)
-    
-    print("now: ",now,\
-          "\n字符串： ",time_str,\
-          "\n当前系统时区下的时间： ",tm,\
-          "\nUTC时间： ",time.gmtime(now),\
-          "\n从struct_time返回纪元值： ",time.mktime(tm))
+```python
+import time
 
+now = time.time()
+time_str = time.ctime(now)
+tm = time.localtime(now)
 
-<a id="org5643ca2"></a>
+print("now: ",now,\
+"\n字符串： ",time_str,\
+"\n当前系统时区下的时间： ",tm,\
+"\nUTC时间： ",time.gmtime(now),\
+"\n从struct_time返回纪元值： ",time.mktime(tm))
+```
+
+<a id="org4cbe8a2"></a>
 
 ## 读写日期和时间
 
 -   strftime() 把时间和日期转换成字符串
 -   strptime() 把字符串转换成日期或时间
-    
-        import time
-        
-        now = time.time()
-        str_time = time.ctime(now)
-        
-        fmt = "It's %A, %B %d, %Y, local time %I:%M:%S%p"
-        t = time.localtime(now)
-        str_time_format = time.strftime(fmt,t)
-        print("当前时间： ",str_time,
-              "\ntime.strftime 转换: ",str_time_format,"\n")
-        
-        from datetime import date
-        some_day = date(2014,7,9)
-        fmt = "It's %B %d, %Y, local time %I:%M:%S%p"
-        str_time_format1 = some_day.strftime(fmt)
-        print("date 对象时间：",some_day,
-              "\nstrftime 转换： ",str_time_format1,"\n")
-        
-        
-        from datetime import time
-        some_time = time(10,35)
-        str_time_format2 = some_time.strftime(fmt)
-        print("time 对象时间：",some_time,
-              "\nstrftime 转换： ",str_time_format2,"\n")
-        
-        import time
-        fmt = "%Y-%m-%d"
-        print("字符串转换成日期或时间： \n",time.strptime("2012-01-29",fmt))
+
+```python
+import time
+
+now = time.time()
+str_time = time.ctime(now)
+
+fmt = "It's %A, %B %d, %Y, local time %I:%M:%S%p"
+t = time.localtime(now)
+str_time_format = time.strftime(fmt,t)
+print("当前时间： ",str_time,
+"\ntime.strftime 转换: ",str_time_format,"\n")
+
+from datetime import date
+some_day = date(2014,7,9)
+fmt = "It's %B %d, %Y, local time %I:%M:%S%p"
+str_time_format1 = some_day.strftime(fmt)
+print("date 对象时间：",some_day,
+"\nstrftime 转换： ",str_time_format1,"\n")
 
 
-<a id="org5e8dbae"></a>
+from datetime import time
+some_time = time(10,35)
+str_time_format2 = some_time.strftime(fmt)
+print("time 对象时间：",some_time,
+"\nstrftime 转换： ",str_time_format2,"\n")
+
+import time
+fmt = "%Y-%m-%d"
+print("字符串转换成日期或时间： \n",time.strptime("2012-01-29",fmt))
+```
+
+<a id="orgf305e0b"></a>
 
 ## locale
 
-    import locale
-    from datetime import date
-    
-    names = locale.locale_alias.keys()
-    good_names = [ name for name in names if len(name) == 5 and name[2] == '_']
-    print(good_names[:5])
-    
-    de = [ name for name in good_names if name.startswith('de')]
-    print(de)
-    
-    halloween = date(2014,10,31)
-    for lang_country in ['en_us','de_de']:
-        # locale.setlocale(locale.LC_TIME, lang_country)  
-        halloween.strftime('%A, %B, %d')
+```python
+import locale
+from datetime import date
 
+names = locale.locale_alias.keys()
+good_names = [ name for name in names if len(name) == 5 and name[2] == '_']
+print(good_names[:5])
 
+de = [ name for name in good_names if name.startswith('de')]
+print(de)
+
+halloween = date(2014,10,31)
+for lang_country in ['en_us','de_de']:
+# locale.setlocale(locale.LC_TIME, lang_country)  
+halloween.strftime('%A, %B, %d')
+```
