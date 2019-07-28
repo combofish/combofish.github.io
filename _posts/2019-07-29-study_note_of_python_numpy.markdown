@@ -5,6 +5,7 @@ date: 2019-7-29
 tag: python NumPy 
 ---
 
+本文是我在学习期间的笔记，看的书是《Python数据分析基础教程 NumPy学习指南 》第二版。
 
 # Table of Contents
 
