@@ -43,7 +43,8 @@ numpy数组在数值运算方面的效率优于python提供的list容器。
 
 ## 向量加法
 
--   TypeError: 'range' object does not support item assignment
+-   TypeError: 'range' object does not support item assignment  
+
 ```python
 def python_sum(n):
 	a = list(range(n))
@@ -88,6 +89,7 @@ def test(size):
 
 test(100000)
 ```
+
 两者的输出形式上有差异：numpysum 的输出不包含逗号，numpy的数组对象以专门的数据结构来存储数值。
 
 
@@ -105,6 +107,7 @@ test(100000)
 大部分操作仅仅修改元数据，而不改变底层的实际数据。
 
 -   numpy 数组的下标也是从0开始的。
+
 ```python
 from numpy import *
 
@@ -122,6 +125,7 @@ print("选取[1,2]: \n\t", b[1,2])
 <a id="org46dbb47"></a>
 
 ### 指定类型
+
 ```python
 arange(8,dtype = float64)
 ```
@@ -129,6 +133,7 @@ arange(8,dtype = float64)
 -   复数是不能转换为整数的。 否则会触发 TypeError
 -   数据类型对象是numpy.dtype类的实例。
 -   数据类型对象是可以给出单个数组元素在内存中占用的字节数，即dtype类的itemsize属性：
+
 ```python
 array(6).dtype.itemsize
 ```
@@ -148,38 +153,45 @@ array(6).dtype.itemsize
 ### 改变数组的维度
 
 先定义一个数组
+
 ```python
 a = arange(24).reshape(2,3,4)
 a
 ```
 
 -   ravel() 函数完成展平操作,只返回数组的视图。
+
 ```python
 a.ravel()
 ```
 
 -   flatten() 展平，会请求分配内存来保存结果。
+
 ```python
 a.flatten()
 ```
 
 -   两个函数都不改变原数组
+
 ```python
 a
 ```
 
 -   用元祖设置维度
+
 ```python
 a.shape = (6,4)
 a
 ```
 
 -   transpose() 得到转置矩阵
+
 ```python
 a.transpose()
 ```
 
 -   resize() 和reshape()函数功能一样，但resize会直接修改原来的数组
+
 ```python
 a.resize(2,12)
 a 
@@ -191,6 +203,7 @@ a
 ### 数组的组合
 
 -   先创建一个数组
+
 ```python
 from numpy import *  
 a = arange(9).reshape(3,3)
@@ -199,37 +212,44 @@ print("a = \n",a,"\nb = \n",b)
 ```
 
 -   hstack((a,b)) 水平组合
+
 ```python
 hstack((a,b))
 ```
 
 -   concatenate((a,b),axis = 1) 实现水平组合
+
 ```python
 concatenate((a,b), axis=1)
 ```
 
 -   vstack((a,b)) 垂直组合，同样需要构造一个元组作为参数
+
 ```python
 vstack((a,b))
 ```
 
 -   concatenate((a,b),axis=0) 实现垂直组合
+
 ```python
 concatenate((a,b),axis=0)
 ```
 
 -   dstack((a,b)) 深度组合，将一系列数组沿着纵轴方向进行层叠组合
+
 ```python
 dstack((a,b))
 ```
 
 -   column<sub>stack</sub>() 对于一位数组将安照列方向进行组合
 -   == 运算符可以来比较两个 NumPy 数组
+
 ```python
 column_stack((a, b)) == hstack((a, b))
 ```
 
 -   row<sub>stack</sub>((a,b)) 按行方向进行组合的函数
+
 ```python
 row_stack((a, b)) == vstack((a, b))
 ```
@@ -242,11 +262,13 @@ row_stack((a, b)) == vstack((a, b))
 1.  水平分割
 
 -   hsplit(a,3)
+
 ```python
 hsplit(a,3)
 ```
 
 -   split(a,3,axis=1))
+
 ```python
 split(a,3,axis=1)
 ```
@@ -254,11 +276,13 @@ split(a,3,axis=1)
 2.  垂直分割
 
 -   vsplit(a,3)
+
 ```python
 vsplit(a,3)
 ```
 
 -   split(a,3,axis=0)
+
 ```python
 split(a,3,axis=0)
 ```
@@ -266,6 +290,7 @@ split(a,3,axis=0)
 3.  深度分割
 
 -   dsplit(a,3)
+
 ```python
 c = arange(27).reshape(3,3,3)
 print("c = \n", c)
@@ -281,49 +306,60 @@ print("\ndsplit = ",dsplit(c,3))
 1.  ndim
 
 -   给出数组的维度
+
 ```python
 b.ndim
 ```
 2.  size
 
 -   给出数组元素的总个数
+
 ```python
 b.size
 ```
 3.  itemsize
 
 -   给出数组中元素的被内存中所占的字节数
+
 ```python
 b.itemsize
 ```
 4.  nbytes
 
 -   整个数组所占的存储空间
+
 ```python
 b.nbytes
 ```
 5.  T
+
 ```python
 b.T
 ```
+
 6.  real,imag
+
 ```python
 c = array([1.j + 1, 2j + 3])
 print("c.real = ",c.real, "\n,c.imag = ",c.imag)
 ```
+
 7.  flat
 
 -   返回一个Numpy.flatiter对像，
 -   这是获得flatiter对象的唯一方式，
 -   我们无法访问flaiter的构造函数。
 -   遍历数组
+
 ```python
 f = b.flat
 for i in f:
 print(i)
 ```
+
 -   获取对象
 -   flat属性是一个可赋值的属性，对flat属性赋值将导致整个数组的元素都被覆盖。
+
 ```python
 b = arange(4).reshape(2, 2)
 print("b = ",b)
@@ -342,14 +378,17 @@ print("b = ", b)
 1.  tolist()
 
 -   转换成列表
+
 ```python    
 c = array([ 1 + 1.j, 3. + 2.j])
 c.tolist()
 ```
+
 2.  astype()
 
 -   转换数组时指定数据类型
 -   在复数转换为整数的过程中，丢失了虚部，会报错
+
 ```python
 print("c = ",c)
 print("c.astype(int) = ", c.astype(int))
@@ -367,6 +406,7 @@ print("c.astype('complex') = ", c.astype('complex'))
 
 -   np.eye(n) 创建单位矩阵
 -   np.savetxt() 将数据存储到文件中
+
 ```python
 import os
 import numpy as np
@@ -376,6 +416,7 @@ print('i2 = ',i2)
 np.savetxt('eye2.txt',i2)
 print(os.path.exists('eye2.txt'))
 ```
+
 -   loadtxt() 能方便的读取CSV文件
 
 
@@ -402,20 +443,27 @@ print(os.path.exists('eye2.txt'))
 1.  创建矩阵
 
 -   用字符串创建
+
 ```python
 from numpy import *
 A = mat('1 2 3; 4 5 6; 7 8 9')
 print("Creating from string: ", A)
 ```
+
 -   用numpy数组进行创建
+
 ```python
 mat(arange(9).reshape(3,3))
 ```
+
 2.  获取转置矩阵
+
 ```python
 A.T
 ```
+
 3.  获取逆矩阵
+
 ```python
 A.I
 ```
@@ -425,6 +473,7 @@ A.I
 ### 从已有矩阵创建新矩阵
 
 -   bmat 即分块矩阵 block matrix
+
 ```python
 import numpy as np
 A = np.eye(2)
@@ -432,7 +481,9 @@ print("A",A)
 B = 2 * A
 print("B", B)
 ```
+
 -   使用字符串创建复合矩阵
+
 ```python
 np.bmat("A B; A B")
 ```
@@ -444,6 +495,7 @@ np.bmat("A B; A B")
 -   通用函数的输入是一组标量，输出也是一组标量。通常可以对应与基本数学运算。
 -   zeros<sub>like</sub>(a) 创建一个和a形状相同的，并且元素个数全部为0的数组。
 -   frompyfunc(func,1,1) 创建通用函数，指定输入参数的个数为1,输出参数的个数为1。
+
 ```python
 def ultimate_answer(a):
 	result = np.zeros_like(a)
@@ -456,6 +508,7 @@ print("The answer : ", ufunc(np.arange(4)))
 
 print("The answer : ", ufunc(np.arange(4).reshape(2,2)))
 ```
+
 1.  通用函数的方法
 
 -   通用函数并非真的函数，而是能表示函数的对象
@@ -465,19 +518,24 @@ print("The answer : ", ufunc(np.arange(4).reshape(2,2)))
 1.  reduce
 
 -   在连续的数组元素之间递归调用通用函数，即可得到输入数组的规约（reduce）计算结果
+
 ```python
 a = np.arange(9)
 print("Reduce",np.add.reduce(a))
 ```
+
 2.  accumulate
 
 -   递归作用于输入数组，但它存储中间结果并返回。    
+
 ```python
 np.add.accumulate(a)
 ```
+
 3.  reduceat
 
 -   该函数需要一个数组和一个索引值列表作为参数
+
 ```python
 print("Reduceat", np.add.reduceat(a, [0, 5, 2, 7]))
 # 相当于
@@ -486,9 +544,11 @@ print("Reduceat step II", a[5])
 print("Reduceat step III", np.add.reduce(a[2:7]))
 print("Reduceat step IV", np.add.reduce(a[7:]))
 ```
+
 4.  outer
 
 -   该方法返回一个数组，它的秩（rank）等于两个输入数组的秩值之和。
+
 ```python
 np.add.outer(np.arange(3), a)
 ```
@@ -502,7 +562,8 @@ np.add.outer(np.arange(3), a)
 
 1.  divide, true<sub>divide</sub>, floor<sub>divide</sub>
 
--   floor<sub>divide</sub>() 函数在整数和浮点数的除法中只保留整数部分。
+-   floor<sub>divide</sub>() 函数在整数和浮点数的除法中只保留整数部分。  
+
 ```python
 import numpy as np
 a = np.array([2,3,4])
@@ -525,27 +586,35 @@ print("// operator", a//b, "\n", b//a)
 
 1.  remainder
 
--   返回两个数组中元素相除后的余数，如果第二个数字为0, 则直接返回0。
+-   返回两个数组中元素相除后的余数，如果第二个数字为0, 则直接返回0。  
+
 ```python
 a = np.arange(-4,4)
 print("a = ",a)
 print("Remainder",np.remainder(a,2))
 ```
+
 2.  mod
 
 -   与 remainder 函数的功能完全一致
+
 ```python
 np.mod(a,2)
 ```
+
 3.  %
 
 -   该操作符仅仅是 remainder 函数的缩写
+
 ```python
 a % 2 
 ```
+
 4.  fmod
 
 -   所得的余数的正负由被除数决定，与除数的正负无关。
+
 ```python
 np.fmod(a,2)
 ```
+
