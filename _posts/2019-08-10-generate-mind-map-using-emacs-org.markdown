@@ -81,6 +81,8 @@ org-mind-map 包的github [主页](https://github.com/theodorewiles/org-mind-map
 *** sub-branch 2 
 *** sub-branch 3 
 ```
++ M+x org-mind-map-write 生成图片
++ 可选格式 png, pdf, jpeg, svg, eps, gif, tiff
 
 ![xiaoguotu](/images/mind-map.png)
-[效果](./example1.png)
+
