@@ -82,5 +82,5 @@ org-mind-map 包的github [主页](https://github.com/theodorewiles/org-mind-map
 *** sub-branch 3 
 ```
 
-[xiaoguotu](/images/mind-map.png)
+![xiaoguotu](/images/mind-map.png)
 [效果](./example1.png)
