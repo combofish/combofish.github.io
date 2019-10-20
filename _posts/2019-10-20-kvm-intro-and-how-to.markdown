@@ -4,36 +4,36 @@ title: "KVM虚拟化的介绍与使用"
 date: 2019-10-20
 tag: KVM qemu libvirt virt-manager
 ---
-- [KVM 介绍](#orgf65039d)
-  - [KVM 架构](#orgcd85c64)
-  - [KVM 工具集合](#org7c1e5cb)
-- [kvm 使用](#orgb43bb3b)
-  - [查看 CPU 是否支持](#orgff96390)
-  - [查看内核模块是否打开(默认开启)](#org38384b5)
-  - [开启 libvirtd 服务](#orgfda53d8)
-    - [安装中遇到的错误](#org008090a)
-  - [virt-manager](#org18ceb8d)
-    - [虚拟化管理应用程序（包括命令行工具）](#org118e95f)
-    - [支持工具](#orgc1e94c4)
-    - [参考链接](#org069e46b)
-  - [virt-convert](#org645d002)
-  - [qemu-img](#org56378e3)
-    - [create](#orgfa77787)
-    - [convert](#orgb372be0)
-    - [check](#org2cf93b8)
-    - [resize](#orgb8c2c08)
-    - [snapshot](#orgac9da0d)
-- [参考链接](#org280a5a8)
+- [KVM 介绍](#orged841fc)
+  - [KVM 架构](#orgba190b5)
+  - [KVM 工具集合](#org33db86b)
+- [kvm 使用](#org9eb55f5)
+  - [查看 CPU 是否支持](#org9ae6394)
+  - [查看内核模块是否打开(默认开启)](#org3b97e92)
+  - [开启 libvirtd 服务](#orgc6fa72f)
+    - [安装中遇到的错误](#org2b04805)
+  - [virt-manager](#org90229f2)
+    - [虚拟化管理应用程序（包括命令行工具）](#orgb38bd74)
+    - [支持工具](#orge48d51f)
+    - [参考链接](#org6053ebc)
+  - [virt-convert](#orgf201098)
+  - [qemu-img](#org5a1690e)
+    - [create](#orga26fbae)
+    - [convert](#orgad17a85)
+    - [check](#org7cfebea)
+    - [resize](#org12220f9)
+    - [snapshot](#orgdcccfa5)
+- [参考链接](#org2cb5b06)
 
 
-<a id="orgf65039d"></a>
+<a id="orged841fc"></a>
 
 # KVM 介绍
 
 -   KVM 全称是 基于内核的虚拟机（Kernel-based Virtual Machine），它是Linux 的一个内核模块，该内核模块使得 Linux 变成了一个 Hypervisor
 
 
-<a id="orgcd85c64"></a>
+<a id="orgba190b5"></a>
 
 ## KVM 架构
 
@@ -44,7 +44,7 @@ KVM 是基于虚拟化扩展（Intel VT 或者 AMD-V）的 X86 硬件的开源�
 -   QEMU：修改过的被 KVM 虚机使用的 QEMU 代码，运行在用户空间，提供硬件 I/O 虚拟化，通过 IOCTL /dev/kvm 设备和 KVM 交互。
 
 
-<a id="org7c1e5cb"></a>
+<a id="org33db86b"></a>
 
 ## KVM 工具集合
 
@@ -56,19 +56,19 @@ KVM 是基于虚拟化扩展（Intel VT 或者 AMD-V）的 X86 硬件的开源�
 -   sVirt：安全工具
 
 
-<a id="orgb43bb3b"></a>
+<a id="org9eb55f5"></a>
 
 # kvm 使用
 
 
-<a id="orgff96390"></a>
+<a id="org9ae6394"></a>
 
 ## 查看 CPU 是否支持
 
 grep &#x2013;color -E "vmx|svm" /proc/cpuinfo
 
 
-<a id="org38384b5"></a>
+<a id="org3b97e92"></a>
 
 ## 查看内核模块是否打开(默认开启)
 
@@ -77,7 +77,7 @@ lsmod | grep kvm
 ```
 
 
-<a id="orgfda53d8"></a>
+<a id="orgc6fa72f"></a>
 
 ## 开启 libvirtd 服务
 
@@ -123,7 +123,7 @@ emerge -pvt net-firewall/ebtables
     ```
 
 
-<a id="org008090a"></a>
+<a id="org2b04805"></a>
 
 ### 安装中遇到的错误
 
@@ -139,14 +139,14 @@ emerge -pvt net-firewall/ebtables
     <https://www.linuxquestions.org/questions/linux-from-scratch-13/configure-error-xml-parser-perl-module-is-required-for-intltool-4175578941/>
 
 
-<a id="org18ceb8d"></a>
+<a id="org90229f2"></a>
 
 ## virt-manager
 
 -   注：在一台机器上的virt-manager可以通过add connection管理其它机器上的虚拟机
 
 
-<a id="org118e95f"></a>
+<a id="orgb38bd74"></a>
 
 ### 虚拟化管理应用程序（包括命令行工具）
 
@@ -162,7 +162,7 @@ emerge -pvt net-firewall/ebtables
 virt-manager 使用 libvirt 虚拟化库来管理可用的虚拟机管理程序。 libvirt 公开了一个应用程序编程接口 (API)， 该接口与大量开源虚拟机管理程序相集成，以实现控制和监视。libvirt 提供了一个名为 libvirtd 的守护程序，帮助实施控制和监视
 
 
-<a id="orgc1e94c4"></a>
+<a id="orge48d51f"></a>
 
 ### 支持工具
 
@@ -176,7 +176,7 @@ virt-manager 使用 libvirt 虚拟化库来管理可用的虚拟机管理程序�
 -   最后，管理 Guest 域的最强大的工具是虚拟化 shell，或者称为 virsh。virsh 可用于列出、启动和停止虚拟机，以及创建虚拟机。简言之，您可使用 virsh 跨虚拟机管理程序执行全面地管理公开在其他工具中未提供的虚拟化特性。
 
 
-<a id="org069e46b"></a>
+<a id="org6053ebc"></a>
 
 ### 参考链接
 
@@ -185,15 +185,15 @@ virt-manager 使用 libvirt 虚拟化库来管理可用的虚拟机管理程序�
 KVM之二：KVM工具简介一：virt-manager，virt-viewer，virt-convert,qemu-img <https://www.jianshu.com/p/b894ca1abd51>
 
 
-<a id="org645d002"></a>
+<a id="orgf201098"></a>
 
 ## virt-convert
 
 -   virt-convert 可以OVF或VMX文件转换为KVM的支持格式。默认转换是”raw”。这个工具主要是实现v2v,将现用的VM打包并导入新的KVM环境。
-    -   命令用法： virt-convert INPUT.vmx|INPUT.ovf|INPUT-DIR|INPUT.zip [OPTIONS]
-    -   选项：
 
 ```shell
+# 命令用法： virt-convert INPUT.vmx|INPUT.ovf|INPUT-DIR|INPUT.zip [OPTIONS]
+# 选项：
 -i / --input-format [ 输入格式（.vmx, .ovf, .zip） ]
 -D / --disk-format [ 输出格式（.raw, .qcow2） ]
 
@@ -205,7 +205,7 @@ virt-convert centos6.vmx --disk-format qcow2
 ```
 
 
-<a id="org56378e3"></a>
+<a id="org5a1690e"></a>
 
 ## qemu-img
 
@@ -214,7 +214,7 @@ qemu-img command [command options]
 -   qemu-img是QEMU的磁盘管理工具，在KVM环境中该工具必不可少。与virt-convert不同，qemu-img是使用在磁盘类型的转换。
 
 
-<a id="orgfa77787"></a>
+<a id="orga26fbae"></a>
 
 ### create
 
@@ -228,7 +228,7 @@ qemu-img create [-f fmt] [-o options] filename [size]
 ```
 
 
-<a id="orgb372be0"></a>
+<a id="orgad17a85"></a>
 
 ### convert
 
@@ -245,7 +245,7 @@ out_filename:转化后的文件
 ```
 
 
-<a id="org2cf93b8"></a>
+<a id="org7cfebea"></a>
 
 ### check
 
@@ -256,7 +256,7 @@ qemu-img check [-f fmt] filename
 ```
 
 
-<a id="orgb8c2c08"></a>
+<a id="org12220f9"></a>
 
 ### resize
 
@@ -267,7 +267,7 @@ qemu-img resize filename [+ | -]size
 ```
 
 
-<a id="orgac9da0d"></a>
+<a id="orgdcccfa5"></a>
 
 ### snapshot
 
@@ -280,7 +280,7 @@ Snapshot [-l | -a snapshot | -c snapshot | -d snapshot] filename
 ```
 
 
-<a id="org280a5a8"></a>
+<a id="org2cb5b06"></a>
 
 # 参考链接
 
