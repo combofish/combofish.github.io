@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "(转)libvirtd:内部错误：Failed to apply firewall rule"
+title: "(转)libvirtd:内部错误：Failed to apply firewall rules"
 date: 2019-10-21
 tag: libvirt libvirtd failed
 ---
