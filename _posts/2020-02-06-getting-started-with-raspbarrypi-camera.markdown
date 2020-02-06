@@ -104,6 +104,8 @@ camera.capture('test.jpg')
 camera.end_preview()
 ```
 
+常用设置
+
 ```python
 camera.start_preview(alpha=200) # 还可设置画面透明度, 其中alpha 的值可为0-255 的任何值
 camera.capture() # 拍摄图片
