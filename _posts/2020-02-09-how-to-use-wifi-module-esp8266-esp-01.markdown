@@ -1,8 +1,8 @@
 ---
 layout: post
-title: "How to Use HC-05 Bluetooth Modules"
-date: "2020-02-08 14：11：00"
-tag: Arduino HC-05 Bluetooth 
+title: "How to use an ESP-01 module"
+date: "2020-02-09 21：58：00"
+tag: Arduino ESP8266 ESP-01 
 ---
 - [ESP-01 WIFI模块](#orgf67137d)
   - [简介](#orgf5e8b7e)
