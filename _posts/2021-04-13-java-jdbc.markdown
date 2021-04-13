@@ -1,0 +1,1064 @@
+---
+layout: post
+title: "Getting started with JDBC"
+date: "2021-04-12 11：22：00"
+tag: JDBC Java MySQL eclipse Database
+---
+- [JDBC 入门](#orga4e6b64)
+  - [JDBC 简介](#orgcbd8e9a)
+  - [先熟悉下 eclipse](#org83c0b5a)
+    - [完善自动补全](#org7165a17)
+    - [常用快捷键](#orgefb4d8b)
+    - [添加自定义注释](#org81f0822)
+    - [添加单元测试 Junit](#org9c8c3ad)
+  - [获取数据库连接](#org3812fc0)
+    - [获取数据库连接的步骤](#orgc48135b)
+    - [数据库链接代码](#org0fa6a6c)
+    - [数据库连接池](#org4f1c46b)
+  - [操作和访问数据库](#org5ddbc8e)
+    - [Statement 使用](#orgcda6886)
+    - [PreparedStatement 使用](#org4a50936)
+    - [Blob 字段插入](#org21cd0a8)
+    - [批量插入数据](#org6a58eea)
+  - [DAO 及其实现思想](#orgfb79a69)
+  - [Apache-DBUtils 使用](#orgc739caf)
+    - [DbUtils](#orgdfcdad2)
+    - [QueryRunner 类](#org48f5352)
+    - [ResultSetHandler 接口及实现类](#org717392b)
+  - [其他](#org2f4de8e)
+    - [Java与SQL对应数据类型转换表](#org5bcd0bc)
+    - [jar包命名知识](#org579c330)
+    - [笔记来源](#org53fb744)
+
+
+<a id="orga4e6b64"></a>
+
+# JDBC 入门
+
+
+<a id="orgcbd8e9a"></a>
+
+## JDBC 简介
+
+**JDBC(Java Database Connectivity)** 是一个独立于特定数据库管理系统、 通用的SQL数据库存取和操作的公共接口(一组API),定义了用来访问数据库的标准Java类库, (java.sql,javax.sql)使用这些类库可以以一种标准的方法、方便地访问数据库资源。
+
+-   JDBC为访问不同的数据库提供了一种统一的途径,为开发者屏蔽了一些细节问题。
+-   JDBC的目标是使Java程序员使用JDBC可以连接任何提供了JDBC驱动程序的数据库系统,
+
+这样就使得程序员无需对特定的数据库系统的特点有过多的了解,从而大大简化和加快了开发过程。
+
+
+<a id="org83c0b5a"></a>
+
+## 先熟悉下 eclipse
+
+
+<a id="org7165a17"></a>
+
+### 完善自动补全
+
+eclipse 默认只有在输入"."之后才会有代码提示和自动补全。不够便捷。我们进行如下设置：
+
+-   Window &#x2013;> Perferences &#x2013;> Java &#x2013;> Editor &#x2013;> Content Assist
+-   在 [Auto activation triggers for Java：]选项后的文本框中会看到一个"."。
+
+在"."之后加上"qwertyuiopasdfghjklzxcvbnm"。这样就可以在输入任意字母时有代码提示。
+
+
+<a id="orgefb4d8b"></a>
+
+### 常用快捷键
+
+| 键位                           | 作用                            |
+|------------------------------ |------------------------------- |
+| ctrl+shift+r                   | 打开资源列表                    |
+| ctrl+shift+f                   | 格式化代码alt+? 或 alt+/：自动补全代码或者提示代码 |
+| ctrl+e                         | 快速转换编辑器                  |
+| shift+enter 及 ctrl+shift+enter | 在当前行上或者下边创建空白。    |
+| Alt+方向键上下                 | 上下行交换内容或把当前行内容把上或下移动 |
+| ctrl+/                         | 自动注释当前行或者选择的多行    |
+| ctrl+shift+/                   | 自动注释掉选择的代码块          |
+| ctrl+shift+o                   | 自动引入包和删除无用包          |
+| ctrl+d                         | 删除当前行                      |
+| ctrl+2 L                       | 为本地变量赋值                  |
+| ctrl+.及ctrl+1                 | 下一个错误及快速修改            |
+| Alt+Shift+S                    | 弹出源代码的相关选项            |
+
+
+<a id="org81f0822"></a>
+
+### 添加自定义注释
+
+window >> Preferences >> Java >> Code Style >> Code Templates > Comments >> Types
+
+```java
+/** 
+ * @ClassName: ${type_name} 
+ * @Description: ${todo}(这里用一句话描述这个类的作用) 
+ * @author combofish
+ * @email combofish49@gmail.com
+ * @date ${date} ${time} 
+ * 
+ * ${tags} 
+ */
+```
+
+
+<a id="org9c8c3ad"></a>
+
+### 添加单元测试 Junit
+
+project -> Properties -> Java Build Path -> Libraries -> Classpath -> Add Library -> JUnit5
+
+
+<a id="org3812fc0"></a>
+
+## 获取数据库连接
+
+实际连接结构： java 程序 -> JDBC -> JDBC 驱动 (JDBCMysqlImpl,JDBCOracleImple) -> 数据库
+
+
+<a id="orgc48135b"></a>
+
+### 获取数据库连接的步骤
+
+-   导入 java.sql 包
+-   加载并注册驱动程序
+-   创建 Connection 对象
+-   创建 Statement 对象
+-   执行 SQL 语句
+    -   查询： 使用 ResultSet 对象， 关闭 ResultSet 对象。
+-   关闭 Connection 对象
+
+
+<a id="org0fa6a6c"></a>
+
+### 数据库链接代码
+
+思想：解藕，代码和配置的分离，将需要的数据库的基本信息写在配置文件中。
+
+```java
+public void getConnection() throws Exception{
+    InputStream inputStream = ConnectTest.class.getClassLoader().getResourceAsStream("jdbc.properties");
+
+    Properties properties = new Properties();
+    properties.load(inputStream);
+
+    String user = properties.getProperty("user");
+    String password = properties.getProperty("password");
+    String url = properties.getProperty("url");
+    String driverClass = properties.getProperty("driverClass");
+    //System.out.println(user + password + url + driverClass);
+
+    Class.forName(driverClass); 	// 加载驱动
+
+    Connection connection = DriverManager.getConnection(url, user, password);
+    System.out.println(connection);
+}
+```
+
+-   在工程的 src 目录下创建文件 [ jdbc.properties ]：
+
+```sh
+# MySQL connection
+user=larry
+password=
+url=jdbc:mysql://localhost:3306/test
+driverClass=com.mysql.cj.jdbc.Driver
+```
+
+
+<a id="org4f1c46b"></a>
+
+### 数据库连接池
+
+-   为什么要使用数据库连接池？
+
+普通的JDBC数据库连接使用 DriverManager 来获取,每次向数据库建立连接的时候都要将 Connection 加载到内存中,再验证用户名和密码(得花费0.05s~1s的时间)。需要数据库连接的时候,就向数据库要求一个, 执行完成后再断开连接。 **这样的方式将会消耗大量的资源和时间。** 数据库的连接资源并没有得到很好的重复利用。若同时有几百人甚至几千人在线,频繁的进行数据库连接操作将占用很多的系统资源, 严重的甚至会造成服务器的崩溃。
+
+-   传统开发不能控制被创建的连接对象数,系统资源会被毫无顾及的分配出去,如连接过多,也可能导致内存泄漏,服务器崩溃。
+
+1.  数据库连接池技术
+
+    为解决传统开发中的数据库连接问题,可以采用数据库连接池技术。 数据库连接池的基本思想:就是为数据库连接建立一个“缓冲池”。预先在缓冲池中放入一定数量的连接,当需要 建立数据库连接时,只需从“缓冲池”中取出一个,使用完毕之后再放回去。
+    
+    -   数据库连接池负责分配、管理和释放数据库连接,它允许应用程序重复使用一个现有的数据库连接,而不是重新建立一个。 数据库连接池在初始化时将创建一定数量的数据库连接放到连接池中,这些数据库连接的数量是由最小数据库 连接数来设定的。无论这些数据库连接是否被使用,连接池都将一直保证至少拥有这么多的连接数量。 连接池的最大数据库连接数量限定了这个连接池能占有的最大连接数,当应用程序向连接池请求的连接数超过最大连 接数量时,这些请求将被加入到等待队列中。
+
+2.  常用数据库连接池
+
+    JDBC 的数据库连接池使用 javax.sql.DataSource 来表示,DataSource 只是一个接口,该接口通常由服务器 (Weblogic, WebSphere, Tomcat)提供实现,也有一些开源组织提供实现:
+    
+    -   DBCP 是Apache提供的数据库连接池。tomcat 服务器自带dbcp数据库连接池。速度相对c3p0较快,但因自身存在BUG,Hibernate3已不再提供支持。
+    -   C3P0 是一个开源组织提供的一个数据库连接池,速度相对较慢,稳定性还可以。hibernate官方推荐使用。
+    -   Proxool 是sourceforge下的一个开源项目数据库连接池,有监控连接池状态的功能,稳定性较c3p0差一点。
+    -   BoneCP 是一个开源组织提供的数据库连接池,速度快
+    -   Druid 是阿里提供的数据库连接池,据说是集DBCP 、C3P0 、Proxool 优点于一身的数据库连接池,但是速度不确定是否有BoneCP快。
+    
+    DataSource 通常被称为数据源,它包含连接池和连接池管理两个部分,习惯上也经常把 DataSource 称为连接池。 DataSource用来取代DriverManager来获取Connection,获取速度快,同时可以大幅度提高数据库访问速度。
+    
+    -   **特别注意:**
+    
+    数据源和数据库连接不同,数据源无需创建多个,它是产生数据库连接的工厂,因此整个应用只需要一个数据源即可。 当数据库访问结束后,程序还是像以前一样关闭数据库连接:conn.close(); 但conn.close()并没有关闭数据库的物理连接,它仅仅把数据库连接释放,归还给了数据库连接池。
+
+3.  Druid(德鲁伊)数据库连接池
+
+    Druid是阿里巴巴开源平台上一个数据库连接池实现,它结合了C3P0、DBCP、Proxool等DB池的优点,同时加入了 日志监控,可以很好的监控DB池连接和SQL的执行情况,可以说是针对监控而生的DB连接池。
+    
+    -   从连接池中获取连接的 java 代码
+    
+    ```java
+    private static DataSource source1;
+    static {
+        try {
+    	Properties pros = new Properties();
+    
+    	InputStream is = ClassLoader.getSystemClassLoader().getResourceAsStream("druid.properties");
+    
+    	pros.load(is);
+    
+    	source1 = DruidDataSourceFactory.createDataSource(pros);
+        } catch (Exception e) {
+    	e.printStackTrace();
+        }
+    }
+    
+    public static Connection getConnection3() throws SQLException {
+    
+        Connection conn = source1.getConnection();
+        return conn;
+    }
+    ```
+    
+    -   src下的配置文件为: [ druid.properties ]
+    
+    ```sh
+    url=jdbc:mysql:///test
+    username=
+    password=
+    driverClassName=com.mysql.cj.jdbc.Driver
+    initialSize=10
+    maxActive=20
+    # maxWait=1000
+    # filters=wall
+    ```
+
+
+<a id="org5ddbc8e"></a>
+
+## 操作和访问数据库
+
+数据库连接被用于向数据库服务器发送命令和 SQL 语句,并接受数据库服务器返回的结果。其实一个数据库连接就是一个Socket连接。
+
+-   在 java.sql 包中有 3 个接口分别定义了对数据库的调用的不同方式:
+    -   Statement:用于执行静态 SQL 语句并返回它所生成结果的对象。
+    -   PrepatedStatement:SQL 语句被预编译并存储在此对象中,可以使用此对象多次高效地执行该语句。
+    -   CallableStatement:用于执行 SQL 存储过程
+
+
+<a id="orgcda6886"></a>
+
+### Statement 使用
+
+通过调用 Connection 对象的 createStatement() 方法创建该对象。该对象用于执行静态的 SQL 语句,并且返回执行结果。
+
+-   但是存在如下问题，不在赘述：
+    -   问题一:存在拼串操作,繁琐
+    -   问题二:存在SQL注入问题
+
+
+<a id="org4a50936"></a>
+
+### PreparedStatement 使用
+
+通过调用 Connection 对象的 preparedStatement(String sql) 方法获取 PreparedStatement 对象。 PreparedStatement 对象所代表的 SQL 语句中的参数用问号(?)来表示,调用 PreparedStatement 对象的 setXxx() 方法来设置这些参数. setXxx() 方法有两个参数,第一个参数是要设置的 SQL 语句中的参数的索引(从 1 开始),第二个是设置的 SQL 语句中的参数的值。
+
+1.  使用PreparedStatement实现增、删、改操作
+
+    ```java
+    // 通用的增删改操作
+    public void update(String sql, Object... args) {// sql中占位符的个数与可变形参的长度相同！
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+    	// 1.获取数据库的连接
+    	conn = JDBCUtils.getConnection();
+    	// 2.预编译sql语句，返回PreparedStatement的实例
+    	ps = conn.prepareStatement(sql);
+    	// 3.填充占位符
+    	for (int i = 0; i < args.length; i++) {
+    	    ps.setObject(i + 1, args[i]);// 小心参数声明错误！！
+    	}
+    	// 4.执行
+    	ps.execute();
+        } catch (Exception e) {
+    	e.printStackTrace();
+        } finally {
+    	// 5.资源的关闭
+    	JDBCUtils.closeResource(conn, ps);
+        }
+    }
+    ```
+
+2.  使用PreparedStatement实现查询操作
+
+    -   针对于不同的表的通用的查询操作，返回表中的一条记录
+    
+    ```java
+    public <T> T getInstance(Class<T> clazz, String sql, Object... args) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+    	conn = JDBCUtils.getConnection();
+    
+    	ps = conn.prepareStatement(sql);
+    	for (int i = 0; i < args.length; i++) {
+    	    ps.setObject(i + 1, args[i]);
+    	}
+    
+    	rs = ps.executeQuery();
+    	// 获取结果集的元数据 :ResultSetMetaData
+    	ResultSetMetaData rsmd = rs.getMetaData();
+    	// 通过ResultSetMetaData获取结果集中的列数
+    	int columnCount = rsmd.getColumnCount();
+    
+    	if (rs.next()) {
+    	    T t = clazz.newInstance();
+    	    // 处理结果集一行数据中的每一个列
+    	    for (int i = 0; i < columnCount; i++) {
+    		// 获取列值
+    		Object columValue = rs.getObject(i + 1);
+    
+    		// 获取每个列的列名,别名
+    		// String columnName = rsmd.getColumnName(i + 1);
+    		String columnLabel = rsmd.getColumnLabel(i + 1);
+    
+    		// 给t对象指定的columnName属性，赋值为columValue：通过反射
+    		Field field = clazz.getDeclaredField(columnLabel);
+    		field.setAccessible(true);
+    		field.set(t, columValue);
+    	    }
+    	    return t;
+    	}
+        } catch (Exception e) {
+    	e.printStackTrace();
+        } finally {
+    	JDBCUtils.closeResource(conn, ps, rs);
+        }
+        return null;
+    }
+    ```
+    
+    -   测试查询一条数据
+    
+    ```java
+    @Test
+    public void testGetInstance() {
+        String sql = "select id,name,email from customers where id = ?";
+        Customer customer = getInstance(Customer.class, sql, 1);
+        System.out.println(customer);
+    
+        String sql1 = "select order_id orderId,order_name orderName from `order` where order_id = ?";
+        Order order = getInstance(Order.class, sql1, 1);
+        System.out.println(order);
+    }
+    ```
+    
+    -   获取多个查询对象
+    
+    ```java
+    public <T> List<T> getForList(Class<T> clazz, String sql, Object... args) {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+        try {
+    	conn = JDBCUtils.getConnection();
+    
+    	ps = conn.prepareStatement(sql);
+    	for (int i = 0; i < args.length; i++) {
+    	    ps.setObject(i + 1, args[i]);
+    	}
+    
+    	rs = ps.executeQuery();
+    	// 获取结果集的元数据 :ResultSetMetaData
+    	ResultSetMetaData rsmd = rs.getMetaData();
+    	// 通过ResultSetMetaData获取结果集中的列数
+    	int columnCount = rsmd.getColumnCount();
+    	// 创建集合对象
+    	ArrayList<T> list = new ArrayList<T>();
+    	while (rs.next()) {
+    	    T t = clazz.newInstance();
+    	    // 处理结果集一行数据中的每一个列:给t对象指定的属性赋值
+    	    for (int i = 0; i < columnCount; i++) {
+    		// 获取列值
+    		Object columValue = rs.getObject(i + 1);
+    
+    		// 获取每个列的列名
+    		// String columnName = rsmd.getColumnName(i + 1);
+    		String columnLabel = rsmd.getColumnLabel(i + 1);
+    
+    		// 给t对象指定的columnName属性，赋值为columValue：通过反射
+    		Field field = clazz.getDeclaredField(columnLabel);
+    		field.setAccessible(true);
+    		field.set(t, columValue);
+    	    }
+    	    list.add(t);
+    	}
+    
+    	return list;
+        } catch (Exception e) {
+    	e.printStackTrace();
+        } finally {
+    	JDBCUtils.closeResource(conn, ps, rs);
+        }
+        return null;
+    }
+    ```
+    
+    -   测试获取查询对象列表
+    
+    ```java
+    @Test
+    public void testGetForList() {
+    
+        String sql = "select id,name,email from customers where id < ?";
+        List<Customer> list = getForList(Customer.class, sql, 12);
+        list.forEach(System.out::println);
+    
+        String sql1 = "select order_id orderId,order_name orderName from `order`";
+        List<Order> orderList = getForList(Order.class, sql1);
+        orderList.forEach(System.out::println);
+    }
+    ```
+
+
+<a id="org21cd0a8"></a>
+
+### Blob 字段插入
+
+-   MySQL中,BLOB是一个二进制大型对象,是一个可以存储大量数据的容器,它能容纳不同大小的数据。
+-   插入BLOB类型的数据必须使用PreparedStatement,因为BLOB类型的数据无法使用字符串拼接写的。
+-   MySQL的四种BLOB类型(除了在存储的最大信息量上不同外,他们是等同的)
+
+| 类型         | 大小         |
+|------------ |------------ |
+| TinyBlob类型 | 最大能容纳255B的数据 |
+| Blob类型     | 最大能容纳65KB的 |
+| MediumBlob类型 | 最大能容纳16MB的数据 |
+| LongBlob类型 | 最大能容纳4GB的数据 |
+
+实际使用中根据需要存入的数据大小定义不同的BLOB类型。
+
+-   需要注意的是: **如果存储的文件过大,数据库的性能会下降。**
+
+1.  插入Blob类型的字段
+
+    ```java
+    @Test
+    public void testInsert() throws Exception {
+        Connection conn = JDBCUtils.getConnection();
+        String sql = "insert into customers(name,email,birth,photo)values(?,?,?,?)";
+    
+        PreparedStatement ps = conn.prepareStatement(sql);
+    
+        ps.setObject(1, "魏王海");
+        ps.setObject(2, "yuan@qq.com");
+        ps.setObject(3, "1992-09-08");
+        FileInputStream is = new FileInputStream(new File("./girl.jpg"));
+        ps.setBlob(4, is);
+    
+        ps.execute();
+    
+        is.close();
+        JDBCUtils.closeResource(conn, ps);
+    }
+    ```
+
+2.  读取大数据类型
+
+    ```java
+    @Test
+    public void testQuery() {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        InputStream is = null;
+        FileOutputStream fos = null;
+        ResultSet rs = null;
+        try {
+    	conn = JDBCUtils.getConnection();
+    	String sql = "select id,name,email,birth,photo from customers where id = ?";
+    	ps = conn.prepareStatement(sql);
+    	ps.setInt(1, 22);
+    	rs = ps.executeQuery();
+    	if (rs.next()) {
+    	    // 方式一：
+    	    // int id = rs.getInt(1);
+    	    // String name = rs.getString(2);
+    	    // String email = rs.getString(3);
+    	    // Date birth = rs.getDate(4);
+    	    // 方式二：
+    	    int id = rs.getInt("id");
+    	    String name = rs.getString("name");
+    	    String email = rs.getString("email");
+    	    Date birth = rs.getDate("birth");
+    
+    	    Customer cust = new Customer(id, name, email, birth);
+    	    System.out.println(cust);
+    
+    	    // 将Blob类型的字段下载下来，以文件的方式保存在本地
+    	    Blob photo = rs.getBlob("photo");
+    	    is = photo.getBinaryStream();
+    	    fos = new FileOutputStream("zhangyuhao2.jpg");
+    	    byte[] buffer = new byte[1024];
+    	    int len;
+    	    while ((len = is.read(buffer)) != -1) {
+    		fos.write(buffer, 0, len);
+    	    }
+    
+    	}
+        } catch (Exception e) {
+    	e.printStackTrace();
+        } finally {
+    
+    	try {
+    	    if (is != null)
+    		is.close();
+    	} catch (IOException e) {
+    	    e.printStackTrace();
+    	}
+    
+    	try {
+    	    if (fos != null)
+    		fos.close();
+    	} catch (IOException e) {
+    	    e.printStackTrace();
+    	}
+    
+    	JDBCUtils.closeResource(conn, ps, rs);
+        }
+    }
+    ```
+
+
+<a id="org6a58eea"></a>
+
+### 批量插入数据
+
+当需要成批插入或者更新记录时,可以采用Java的批量更新机制,这一机制允许多条语句一次性提交给数据库批量处理。
+
+-   JDBC的批量处理语句包括下面三个方法:
+    -   addBatch(String):添加需要批量处理的SQL语句或是参数;
+    -   executeBatch():执行批量处理语句;
+    -   clearBatch():清空缓存的数据
+
+-   通常我们会遇到两种批量执行SQL语句的情况:
+    -   多条SQL语句的批量处理;
+    -   一个SQL语句的批量传参;
+
+1.  批量插入：使用PreparedStatement
+
+    ```java
+    @Test
+    public void testInsert1() {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+    
+    	long start = System.currentTimeMillis();
+    
+    	conn = JDBCUtils.getConnection();
+    	String sql = "insert into goods(name)values(?)";
+    	ps = conn.prepareStatement(sql);
+    	for (int i = 1; i <= 10000; i++) {
+    	    ps.setObject(1, "name_" + i);
+    
+    	    ps.execute();
+    	}
+    
+    	long end = System.currentTimeMillis();
+    
+    	System.out.println("花费的时间为：" + (end - start));// 20000:83065// 花费的时间为：48966
+        } catch (Exception e) {
+    	e.printStackTrace();
+        } finally {
+    	JDBCUtils.closeResource(conn, ps);
+        }
+    }
+    ```
+
+2.  批量插入：addBatch()、executeBatch()、clearBatch()
+
+    ```java
+    /*
+     * 批量插入: addBatch()、executeBatch()、clearBatch()
+     * mysql服务器默认是关闭批处理的，我们需要通过一个参数，让mysql开启批处理的支持。 
+     * 写在配置文件的url后面 ?rewriteBatchedStatements=true
+     * 
+     */
+    @Test
+    public void testInsert2() {
+    	Connection conn = null;
+    	PreparedStatement ps = null;
+    	try {
+    
+    		long start = System.currentTimeMillis();
+    
+    		conn = JDBCUtils.getConnection();
+    		String sql = "insert into goods(name)values(?)";
+    		ps = conn.prepareStatement(sql);
+    		for (int i = 1; i <= 10000; i++) {
+    			ps.setObject(1, "namuue_" + i);
+    
+    			// 1."攒"sql
+    			ps.addBatch();
+    
+    			if (i % 500 == 0) {
+    				// 2.执行batch
+    				ps.executeBatch();
+    
+    				// 3.清空batch
+    				ps.clearBatch();
+    			}
+    
+    		}
+    
+    		long end = System.currentTimeMillis();
+    
+    		System.out.println("花费的时间为：" + (end - start));// 20000:83065 -- 565
+    	} catch (Exception e) { // 1000000:16086;combofish:
+    		e.printStackTrace();
+    	} finally {
+    		JDBCUtils.closeResource(conn, ps);
+    	}
+    }
+    ```
+
+3.  批量插入：设置连接不允许自动提交数据
+
+    ```java
+    @Test
+    public void testInsert3() {
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+    
+    	long start = System.currentTimeMillis();
+    
+    	conn = JDBCUtils.getConnection();
+    
+    	// 设置不允许自动提交数据
+    	conn.setAutoCommit(false);
+    
+    	String sql = "insert into goods(name)values(?)";
+    	ps = conn.prepareStatement(sql);
+    	for (int i = 1; i <= 100000000; i++) {
+    	    ps.setObject(1, "najjj00me_" + i);
+    
+    	    // 1."攒"sql
+    	    ps.addBatch();
+    
+    	    if (i % 500 == 0) {
+    		// 2.执行batch
+    		ps.executeBatch();
+    
+    		// 3.清空batch
+    		ps.clearBatch();
+    	    }
+    
+    	}
+    
+    	// 提交数据
+    	conn.commit();
+    
+    	long end = System.currentTimeMillis();
+    
+    	System.out.println("花费的时间为：" + (end - start));// 20000:83065 -- 565
+        } catch (Exception e) { // 1000000:16086 -- 5114
+    	e.printStackTrace();
+        } finally {
+    	JDBCUtils.closeResource(conn, ps);
+        }
+    }
+    ```
+
+
+<a id="orgfb79a69"></a>
+
+## DAO 及其实现思想
+
+DAO:Data Access Object访问数据信息的类和接口, 包括了对数据的CRUD(Create、Retrival、Update、Delete),而不包含任何业务相关的信息。
+
+-   作用:为了实现功能的模块化,更有利于代码的维护和升级。
+
+```sh
+	└── src
+	├── com
+	│   ├── atuse
+	│   │   ├── bean
+	│   │   │   └── Customer.java
+	│   │   └── dao
+	│   │       ├── BaseDAO.java
+	│   │       ├── CustomerDAOImpl.java
+	│   │       ├── CustomerDAO.java
+	│   │       └── junit
+	│   │           └── CustomerDAOImplTest.java
+	├── druid.properties
+	└── jdbc.properties
+```
+
+| 文件名               | 类型           | 作用                     |
+|-------------------- |-------------- |------------------------ |
+| BaseDAO.java         | abstract class | 定义一个用来被继承的对数据库进行基本操作的Dao |
+| CustomerDAO.java     | interface      | 定义要实现的具体操作     |
+| CustomerDAOImpl.java | class          | 具体实现                 |
+| Customer.java        | class          | 操作的对象，对应数据库中的一张表 |
+| CustomerDAOImplTest  | class          | 测试操作                 |
+
+
+<a id="orgc739caf"></a>
+
+## Apache-DBUtils 使用
+
+commons-dbutils 是 Apache 组织提供的一个开源 JDBC 工具类库,它是对JDBC的简单封装,学习成本极低, 并且使用dbutils能极大简化jdbc编码的工作量,同时也不会影响程序的性能。
+
+-   API介绍:
+    -   org.apache.commons.dbutils.QueryRunner 提供数据库操作的一系列重载的 update() 和 query() 操作
+    -   org.apache.commons.dbutils.ResultSetHandler
+        -   此接口用于处理数据库查询操作得到的结果集。不同的结果集的情形，由其不同的子类来实现。
+    -   org.apache.commons.dbutils.DbUtils 工具类
+
+
+<a id="orgdfcdad2"></a>
+
+### DbUtils
+
+DbUtils :提供如关闭连接、装载JDBC驱动程序等常规工作的工具类,里面的所有方法都是静态的。
+
+-   主要方法如下:
+
+```java
+public static void close(...) throws java.sql.SQLException{}
+// DbUtils类提供了三个重载的关闭方法。这些方法检查所提供的参数是不是NULL,如果不是的话,它们就关闭Connection、Statement和ResultSet。
+public static void closeQuietly(...){}
+// 这一类方法不仅能在Connection、Statement和ResultSet为NULL情况下避免关闭,还能隐藏一些在程序中抛出的SQLEeception。
+public static void commitAndClose(Connection conn)throws SQLException{}
+// 用来提交连接的事务,然后关闭连接
+public static void commitAndCloseQuietly(Connection conn){}
+// 用来提交连接,然后关闭连接,并且在关闭连接时不抛出SQL异常。
+public static void rollback(Connection conn)throws SQLException{}
+// 允许conn为null,因为方法内部做了判断
+public static void rollbackAndClose(Connection conn)throws SQLException{}
+rollbackAndCloseQuietly(Connection){}
+public static boolean loadDriver(java.lang.String driverClassName){}
+// 这一方装载并注册JDBC驱动程序,如果成功就返回true。使用该方法,你不需要捕捉这个异常ClassNotFoundException。
+```
+
+
+<a id="org48f5352"></a>
+
+### QueryRunner 类
+
+该类简单化了SQL查询,它与ResultSetHandler组合在一起使用可以完成大部分的数据库操作,能够大大减少编码量。 QueryRunner类提供了两个构造器: 默认的构造器:需要一个 javax.sql.DataSource 来作参数的构造器
+
+-   QueryRunner类的主要方法:
+-   更新
+
+```java
+public int update(Connection conn, String sql, Object... params) throws SQLException{}
+// 用来执行一个更新(插入、更新或删除)操作。
+```
+
+-   插入
+
+```java
+public T insert(Connection conn,String sql,ResultSetHandler rsh, Object... params) throws
+    SQLException{}
+//只支持INSERT语句,其中 rsh - The handler used to create the result object from
+//    the ResultSet of auto-generated keys. 返回值: An object generated by the handler.
+// 即自动生成的键值
+```
+
+-   批处理
+
+```java
+public int[] batch(Connection conn,String sql,Object[][] params)throws SQLException{}
+// INSERT, UPDATE, or DELETE语句
+public T insertBatch(Connection conn,String sql,ResultSetHandler rsh,Object[][] params)throws SQLException{}
+// 只支持INSERT语句
+```
+
+-   查询
+
+```java
+public Object query(Connection conn, String sql, ResultSetHandler rsh,Object... params) throws
+    SQLException{}
+// 执行一个查询操作,在这个查询中,对象数组中的每个元素值被用来作为查询语句
+// 的置换参数。该方法会自行处理 PreparedStatement 和 ResultSet 的创建和关闭。
+```
+
+
+<a id="org717392b"></a>
+
+### ResultSetHandler 接口及实现类
+
+该接口用于处理 java.sql.ResultSet,将数据按要求转换为另一种形式。 ResultSetHandler 接口提供了一个单独的方法:Object handle (java.sql.ResultSet .rs)。
+
+-   接口的主要实现类:
+
+```sh
+ArrayHandler # 把结果集中的第一行数据转成对象数组。
+ArrayListHandler # 把结果集中的每一行数据都转成一个数组,再存放到List中。
+BeanHandler # 将结果集中的第一行数据封装到一个对应的JavaBean实例中。
+BeanListHandler # 将结果集中的每一行数据都封装到一个对应的JavaBean实例中,存放到List里。
+ColumnListHandler # 将结果集中某一列的数据存放到List中。
+KeyedHandler(name) # 将结果集中的每一行数据都封装到一个Map里,再把这些map再存到一个map里,其key为指定的key。
+MapHandler # 将结果集中的第一行数据封装到一个Map里,key是列名,value就是对应的值。
+MapListHandler # 将结果集中的每一行数据都封装到一个Map里,然后再存放到List
+ScalarHandler # 查询单个值对象
+```
+
+-   测试插入
+
+```java
+@Test
+public void testInsert() {
+    Connection conn = null;
+    try {
+	QueryRunner runner = new QueryRunner();
+	conn = JDBCUtils.getConnection3();
+	String sql = "insert into customers(name,email,birth)values(?,?,?)";
+	int insertCount = runner.update(conn, sql, "蔡徐坤", "caixukun@126.com", "1997-09-08");
+	System.out.println("添加了" + insertCount + "条记录");
+    } catch (SQLException e) {
+	e.printStackTrace();
+    } finally {
+
+	JDBCUtils.closeResource(conn, null);
+    }
+}
+```
+
+-   测试查询,BeanHander:是ResultSetHandler接口的实现类，用于封装表中的一条记录。
+
+```java
+@Test
+public void testQuery1() {
+    Connection conn = null;
+    try {
+	QueryRunner runner = new QueryRunner();
+	conn = JDBCUtils.getConnection3();
+	String sql = "select id,name,email,birth from customers where id = ?";
+	BeanHandler<Customer> handler = new BeanHandler<>(Customer.class);
+	Customer customer = runner.query(conn, sql, handler, 23);
+	System.out.println(customer);
+    } catch (SQLException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+    } finally {
+	JDBCUtils.closeResource(conn, null);
+    }
+}
+```
+
+-   BeanListHandler:是ResultSetHandler接口的实现类，用于封装表中的多条记录构成的集合。
+
+```java
+@Test
+public void testQuery2() {
+    Connection conn = null;
+    try {
+	QueryRunner runner = new QueryRunner();
+	conn = JDBCUtils.getConnection3();
+	String sql = "select id,name,email,birth from customers where id < ?";
+
+	BeanListHandler<Customer> handler = new BeanListHandler<>(Customer.class);
+
+	List<Customer> list = runner.query(conn, sql, handler, 23);
+	list.forEach(System.out::println);
+    } catch (SQLException e) {
+	e.printStackTrace();
+    } finally {
+	JDBCUtils.closeResource(conn, null);
+    }
+}
+```
+
+-   MapHander:是ResultSetHandler接口的实现类，对应表中的一条记录。 将字段及相应字段的值作为map中的key和value
+
+```java
+@Test
+public void testQuery3() {
+    Connection conn = null;
+    try {
+	QueryRunner runner = new QueryRunner();
+	conn = JDBCUtils.getConnection3();
+	String sql = "select id,name,email,birth from customers where id = ?";
+	MapHandler handler = new MapHandler();
+	Map<String, Object> map = runner.query(conn, sql, handler, 23);
+	System.out.println(map);
+    } catch (SQLException e) {
+	e.printStackTrace();
+    } finally {
+	JDBCUtils.closeResource(conn, null);
+    }
+}
+```
+
+-   MapListHander:是ResultSetHandler接口的实现类，对应表中的多条记录。
+-   将字段及相应字段的值作为map中的key和value。将这些map添加到List中
+
+```java
+@Test
+public void testQuery4() {
+    Connection conn = null;
+    try {
+	QueryRunner runner = new QueryRunner();
+	conn = JDBCUtils.getConnection3();
+	String sql = "select id,name,email,birth from customers where id < ?";
+
+	MapListHandler handler = new MapListHandler();
+	List<Map<String, Object>> list = runner.query(conn, sql, handler, 23);
+	list.forEach(System.out::println);
+    } catch (SQLException e) {
+	e.printStackTrace();
+    } finally {
+	JDBCUtils.closeResource(conn, null);
+    }
+}
+```
+
+-   ScalarHandler:用于查询特殊值
+
+```java
+@Test
+public void testQuery5() {
+    Connection conn = null;
+    try {
+	QueryRunner runner = new QueryRunner();
+	conn = JDBCUtils.getConnection3();
+
+	String sql = "select count(*) from customers";
+
+	ScalarHandler handler = new ScalarHandler();
+
+	Long count = (Long) runner.query(conn, sql, handler);
+	System.out.println(count);
+    } catch (SQLException e) {
+	e.printStackTrace();
+    } finally {
+	JDBCUtils.closeResource(conn, null);
+    }
+}
+```
+
+-   查询最大生日
+
+```java
+@Test
+public void testQuery6() {
+    Connection conn = null;
+    try {
+	QueryRunner runner = new QueryRunner();
+	conn = JDBCUtils.getConnection3();
+
+	String sql = "select max(birth) from customers";
+
+	ScalarHandler handler = new ScalarHandler();
+	Date maxBirth = (Date) runner.query(conn, sql, handler);
+	System.out.println(maxBirth);
+    } catch (SQLException e) {
+	e.printStackTrace();
+    } finally {
+	JDBCUtils.closeResource(conn, null);
+    }
+}
+```
+
+-   自定义ResultSetHandler的实现类
+
+```java
+@Test
+public void testQuery7() {
+    Connection conn = null;
+    try {
+	QueryRunner runner = new QueryRunner();
+	conn = JDBCUtils.getConnection3();
+
+	String sql = "select id,name,email,birth from customers where id = ?";
+	ResultSetHandler<Customer> handler = new ResultSetHandler<Customer>() {
+
+		@Override
+		public Customer handle(ResultSet rs) throws SQLException {
+		    //					System.out.println("handle");
+		    //					return null;
+
+		    //					return new Customer(12, "成龙", "Jacky@126.com", new Date(234324234324L));
+
+		    if (rs.next()) {
+			int id = rs.getInt("id");
+			String name = rs.getString("name");
+			String email = rs.getString("email");
+			Date birth = rs.getDate("birth");
+			Customer customer = new Customer(id, name, email, birth);
+			return customer;
+		    }
+		    return null;
+
+		}
+
+	    };
+	Customer customer = runner.query(conn, sql, handler, 23);
+	System.out.println(customer);
+    } catch (SQLException e) {
+	e.printStackTrace();
+    } finally {
+	JDBCUtils.closeResource(conn, null);
+    }
+}
+```
+
+
+<a id="org2f4de8e"></a>
+
+## 其他
+
+
+<a id="org5bcd0bc"></a>
+
+### Java与SQL对应数据类型转换表
+
+| Java类型           | SQL类型                  |
+|------------------ |------------------------ |
+| boolean            | BIT                      |
+| byte               | TINYINT                  |
+| short              | SMALLINT                 |
+| int                | INTEGER                  |
+| long               | BIGINT                   |
+| String             | CHAR,VARCHAR,LONGVARCHAR |
+| byte array         | BINARY , VAR BINARY      |
+| java.sql.Date      | DATE                     |
+| java.sql.Time      | TIME                     |
+| java.sql.Timestamp | TIMESTAMP                |
+
+
+<a id="org579c330"></a>
+
+### jar包命名知识
+
+-   类文件（.class） mybatis-3.4.2.jar
+-   文档包（API） mybatis-3.4.2-javadoc.jar
+-   资源包（code） mybatis-3.4.2-sources.jar
+
+-   使用方法
+    -   类文件（.class） mybatis-3.4.2.jar 反编译，最暴力直接的方法，将jar包拖进IDEA里查看
+    
+    -   文档包（API） mybatis-3.4.2-javadoc.jar 解压该文件，打开index.html查看
+    
+    -   资源包 mybatis-3.4.2-sources.jar 拖进IDEA直接查看
+
+
+<a id="org53fb744"></a>
+
+### 笔记来源
+
+视频课：[尚硅谷JDBC核心技术(新版jdbc)](https://www.bilibili.com/video/BV1eJ411c7rf?p=1)
