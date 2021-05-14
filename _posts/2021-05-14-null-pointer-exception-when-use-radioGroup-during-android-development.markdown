@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Android RadioGroup Error: java.lang.NullPointerException: findViewById;(checkedId) must not be null"
+title: "Android RadioGroup Error: java.lang.NullPointerException: findViewById(checkedId) must not be null"
 date: "2021-05-14 11：10：00"
 tag: RadioGroup RadioButton Android Kotlin Java
 ---
