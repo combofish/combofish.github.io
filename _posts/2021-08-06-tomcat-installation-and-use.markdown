@@ -62,19 +62,19 @@ Tomcat 服务器是一个免费的开放源代码的Web 应用服务器，属于
 -   启动软件
 
 ```sh
-/bin/startup.sh
+bin/startup.sh
 ```
 
 -   查看启动日志
 
 ```sh
-tail -f ../logs/catalina.out
+tail -f logs/catalina.out
 ```
 
 -   关闭Tomcat的命令
 
 ```sh
-sh shutdown.sh
+bin/shutdown.sh
 ```
 
 
