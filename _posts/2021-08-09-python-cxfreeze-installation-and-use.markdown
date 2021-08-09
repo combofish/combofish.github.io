@@ -15,7 +15,7 @@ tag: cr_freeze python exe msi pip
 
 # Python脚本到Windows可执行程序——Cxfreeze的安装与使用
 
-写好的 Python 程序，分发到 Windows 用户的时候，如果再在每一台电脑上配置执行 Python 程序的解释器和相应的依赖库，就会比较繁琐。 所以可以将 Python 程序打包程可执行的 .exe 文件。可以用的库有：cx<sub>freeze</sub>，py2exe，PyInstaller。在此介绍 cx_freeze。
+写好的 Python 程序，分发到 Windows 用户的时候，如果再在每一台电脑上配置执行 Python 程序的解释器和相应的依赖库，就会比较繁琐。 所以可以将 Python 程序打包程可执行的 .exe 文件。可以用的库有：cx_freeze，py2exe，PyInstaller。在此介绍 cx_freeze。
 
 
 <a id="org509726e"></a>
