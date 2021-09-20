@@ -53,7 +53,7 @@ libboost-numpy-dev 已经是最新版 (1.71.0.0ubuntu2)。
 libboost-python-dev 已经是最新版 (1.71.0.0ubuntu2)。
 ```
 
--   去ubuntu 官网查看该软件包 libboost-python。
+-   去ubuntu [软件包网站](https://ubuntu.pkgs.org/) 查看该软件包 libboost-python。
 
 具体版本是：libboost-python1.71.0_1.71.0-6ubuntu6_arm64.deb，发现该软件包包含如下软件：
 
