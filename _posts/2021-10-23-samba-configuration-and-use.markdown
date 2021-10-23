@@ -83,7 +83,7 @@ cat /etc/samba/smb.conf | grep -v '#' | grep -v ';' | grep -v -e '^$'
    guest ok = no
 ```
 
-配置自己的贡献文件夹
+配置自己的共享文件夹
 
 ```conf
 [Share]                           # 指定的共享名称
