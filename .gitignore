@@ -1,6 +1,8 @@
 # backup file
 *~
 
+# dirs
+.idea
 
 _site
 .sass-cache
