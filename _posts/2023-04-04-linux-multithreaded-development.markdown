@@ -33,7 +33,9 @@ tag: cpp linux system programming multi-thread
 
 ## 线程概述
 
-与进程 （process） 类似，线程（thread）是允许应用程序并发执行多个任务的一种机制。一个进程可以包含多个线程。 同一个程序中的所有线程俊辉独立执行相同的程序，且共享同一份全局内存区域，其中包括初始化数据段、未初始化数据段、以及堆内存段。 （传统意义上的 UNIX 进程只是多线程程序的一个特例，该进程只包含一个线程）
+与进程 （process） 类似，线程（thread）是允许应用程序并发执行多个任务的一种机制。一个进程可以包含多个线程。 
+同一个程序中的所有线程均会独立执行相同的程序，且共享同一份全局内存区域，其中包括初始化数据段、未初始化数据段、以及堆内存段。 
+（传统意义上的 UNIX 进程只是多线程程序的一个特例，该进程只包含一个线程）
 
 -   进程是CPU分配资源的最小单位，线程是操作系统调度执行的最小单位。
 -   线程是轻量级的进程 (LWP: Light Weight Process)，在 Linux 环境下线程的本质仍是进程。
@@ -44,14 +46,13 @@ tag: cpp linux system programming multi-thread
 
 ### 线程和进程区别
 
-进程间的信息难以共享。由于除去只读代码段外，父子进程并未共享内存，因此必须采用一些进程间通信方式，在进程间进行信息交换。
+进程间的 `信息难以共享`。由于除去只读代码段外，父子进程并未共享内存，因此必须采用一些进程间通信方式，在进程间进行信息交换。
 
-调用 fork() 来创建进程的代价相对较高，即便利用写时复制技术，仍需要复制诸如内存页表和文件描述符之类的多种进程属性，这意味着 fork() 调用在时间上的开销任然不菲。
+调用 `fork()` 来创建进程的`代价相对较高`，即便利用写时复制技术，仍需要复制诸如内存页表和文件描述符之类的多种进程属性，这意味着 fork() 调用在时间上的开销任然不菲。
 
-线程之间能够方便、快速的共享信息。只需将数据复制到共享（全局或堆）变量中即可。
+线程之间能够`方便、快速的共享信息`。只需将数据复制到共享（全局或堆）变量中即可。
 
-创建线程比创建进程通常快 10 倍甚至更多。线程是共享虚拟地址空间的，无需采用写时复制来复制内存，也无需复制页表。
-
+创建线程比创建进程通常快 10 倍甚至更多。线程是`共享虚拟地址空间的`，无需采用写时复制来复制内存，也无需复制页表。
 
 <a id="orgd4e4816"></a>
 
@@ -81,16 +82,18 @@ tag: cpp linux system programming multi-thread
 
 NPTL， Native POSIX Thread Library，是 Linux 线程的一个新实现，它克服了 LinuxThreads 的缺点，同时也符合 POSIX 的需求。
 
--   查看当前 pthread 库版本， getconf GNU<sub>LIBPTHREAD</sub><sub>VERSION</sub>
+-   查看当前 pthread 库版本， getconf GNU_LIBPTHREAD_VERSION
 
 
 <a id="orgf0c58d8"></a>
 
 ## 创建线程
 
-一般情况下， main 函数所在的线程我们称之为主线程 （main 线程），其余创建的线程称之为子线程。 程序中默认只有一个进程，fork() 函数调用，2个进程。 程序中默认只有一个线程， pthread<sub>create</sub>() 函数调用，2个线程。
+一般情况下， main 函数所在的线程我们称之为`主线程（main 线程）`，其余创建的线程称之为`子线程`。 
+- 程序中默认只有一个进程，fork() 函数调用，2个进程。 
+- 程序中默认只有一个线程，pthread_create() 函数调用，2个线程。
 
-```C
+```c
 /**
    NAME
    pthread_create - create a new thread
@@ -129,14 +132,11 @@ void *callback(void *arg) {
 }
 
 int main() {
-
   pthread_t tid;
-
   int num = 10;
 
   // 创建一个子线程
   int ret = pthread_create(&tid, NULL, callback, (void *) &num);
-
   if (ret != 0) {
     char *err_str = strerror(ret);
     printf("errno: %s\n", err_str);
@@ -146,19 +146,17 @@ int main() {
     printf("%d\n", i);
 
   sleep(1);
-
   return 0;
 }
 ```
-
 
 <a id="orgc8ea943"></a>
 
 ## 线程终止
 
--   pthread<sub>exit</sub>
+-   pthread_exit()
 
-```C
+```c
 //
 // Created by larry on 23-4-2.
 //
@@ -240,9 +238,9 @@ int main() {
 
 ## 线程操作
 
--   pthread<sub>join</sub>
+-   pthread_join()
 
-```C
+```c
 //
 // Created by larry on 23-4-2.
 //
@@ -285,9 +283,7 @@ void *callback(void *arg) {
 
 int main() {
   pthread_t tid;
-
   int ret = pthread_create(&tid, NULL, callback, NULL);
-
   if (ret != 0) {
     char *err_str = strerror(ret);
     printf("err_str: %s\n", err_str);
@@ -300,7 +296,6 @@ int main() {
   printf("tid: %ld, main thread tid: %ld\n", tid, pthread_self());
 
   int *thread_return_value;
-
   ret = pthread_join(tid, (void *) &thread_return_value);
   if (ret != 0) {
     char *err_str = strerror(ret);
@@ -311,20 +306,17 @@ int main() {
   printf("回收子线程资源成功！\n");
 
   pthread_exit(NULL);
-
-
   return 0;
 }
 ```
-
 
 <a id="org93d730f"></a>
 
 ## 线程的分离
 
--   pthread<sub>detach</sub>
+-   pthread_detach()
 
-```C
+```c
 //
 // Created by larry on 23-4-2.
 //
@@ -360,9 +352,7 @@ void *callback(void *arg) {
 
 int main() {
   pthread_t tid;
-
   int ret = pthread_create(&tid, NULL, callback, NULL);
-
   if (ret != 0) {
     char *err_str = strerror(ret);
     printf("err_str %s\n", err_str);
@@ -384,20 +374,17 @@ int main() {
     printf("%d\n", i);
 
   pthread_exit(NULL);
-
-
   return 0;
 }
 ```
-
 
 <a id="org40e19ec"></a>
 
 ## 线程的取消
 
--   pthread<sub>cancel</sub>
+-   pthread_cancel()
 
-```C
+```c
 //
 // Created by larry on 23-4-2.
 //
@@ -433,7 +420,6 @@ void *callback(void *arg) {
 }
 
 int main() {
-
   pthread_t tid;
   int ret = pthread_create(&tid, NULL, callback, NULL);
   if (ret != 0) {
@@ -459,7 +445,7 @@ int main() {
 
 ## 线程属性
 
-```C
+```c
 //
 // Created by larry on 23-4-2.
 //
@@ -493,7 +479,6 @@ int main() {
    Compile and link with -pthread.
 */
 
-
 #include <stdio.h>
 #include <pthread.h>
 #include <string.h>
@@ -504,14 +489,9 @@ void *callback(void *arg) {
 }
 
 int main() {
-  // 创建一个线程属性变量
-  pthread_attr_t attr;
-
-  // 初始化线程属性变量
-  pthread_attr_init(&attr);
-
-  // 设置属性
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+  pthread_attr_t attr;  // 创建一个线程属性变量
+  pthread_attr_init(&attr);  // 初始化线程属性变量
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED); // 设置属性
 
   pthread_t tid;
   int ret = pthread_create(&tid, &attr, callback, NULL);
@@ -519,18 +499,14 @@ int main() {
     char *str_err = strerror(ret);
     printf("str_err: %s", str_err);
   }
-
-  // 获取线程栈的大小
+  
   size_t sz;
-  pthread_attr_getstacksize(&attr, &sz);
+  pthread_attr_getstacksize(&attr, &sz); // 获取线程栈的大小
   printf("get stack size: %ld\n", sz); // 8388608
   printf("tid: %ld， main thread id:%ld", tid, pthread_self());
-
-  // 释放线程属性资源
-  pthread_attr_destroy(&attr);
-
+  
+  pthread_attr_destroy(&attr); // 释放线程属性资源
   pthread_exit(NULL);
-
   return 0;
 }
 ```
@@ -540,16 +516,14 @@ int main() {
 
 ## 线程同步
 
-```C
+```c
 //
 // Created by larry on 23-4-2.
 //
 
 /**
-
    使用多线程实现买票案例
    有三个窗口，一共是100张票。
-
 */
 
 #include <pthread.h>
@@ -591,16 +565,17 @@ int main() {
   //    pthread_detach(tid3);
 
   pthread_exit(NULL);
-
   return 0;
 }
 ```
 
-线程的主要优势在于，能够通过全局变量来共享信息。不过，这种便捷的共享是有代价的： 必须保证多个线程不会同时修改同一变量，或者某一线程不会读取正在由其他线程修改的变量。
+线程的主要优势在于，`能够通过全局变量来共享信息`。不过，这种便捷的共享是有代价的： 
+- 必须保证多个线程不会同时修改同一变量，或者某一线程不会读取正在由其他线程修改的变量。
 
-临界区是指访问某一共享资源的代码片段，并且这段代码的执行应为原子操作，也就是同时访问同一共享资源的其他线程不应中断该片段的执行。
+`临界区`是指访问某一共享资源的代码片段，并且这段代码的执行应为原子操作，也就是同时访问同一共享资源的其他线程不应中断该片段的执行。
 
-线程同步：即当有一个线程正在对内存进行操作时，其他线程都不可以对这个内存地址进行操作， 直到该线程完成操作，其他线程才能对该内存地址进行操作，而其他线程则处于等待状态。
+`线程同步`：即当有一个线程正在对内存进行操作时，其他线程都不可以对这个内存地址进行操作，
+直到该线程完成操作，其他线程才能对该内存地址进行操作，而其他线程则处于等待状态。
 
 
 <a id="org185e408"></a>
@@ -609,25 +584,26 @@ int main() {
 
 -   互斥量
 
-为了避免线程更新共享变量时出现问题，可以使用互斥量 mutex( mutual exclusion ) 的缩写来确保同时仅有一个线程可以访问某项共享资源。 可以使用互斥量来保证对任意共享资源的原子访问。
+为了避免线程更新共享变量时出现问题，可以使用`互斥量` mutex( mutual exclusion ) 的缩写来确保同时仅有一个线程可以访问某项共享资源。 
+可以使用互斥量来保证对任意共享资源的原子访问。
 
-互斥量有两种状态，（已锁定 locked） , 和 未锁定 (unlocked)。任何时候，之多只有一个线程可以锁定该互斥量。试图对已经锁定的某一互斥量再次加锁， 将可能阻塞线程或者报错失败，具体取决于加锁时使用的方法。
+互斥量有两种状态，（已锁定 `locked`） , 和 (未锁定 `unlocked`)。任何时候，至多只有一个线程可以锁定该互斥量。
+试图对已经锁定的某一互斥量再次加锁， 将可能阻塞线程或者报错失败，具体取决于加锁时使用的方法。
 
-一旦线程锁定互斥量，随机成为该胡吃两的所有者，只有所有者才能给互斥量解锁。一般情况下，对每一共享资源（可能有多个相关变量组成）会使用不同的互斥量， 每一线程在访问统一资源时将采用如下协议：针对共享资源锁定互斥量，访问共享资源，对互斥量解锁。
+一旦线程锁定互斥量，随机成为该互斥量的所有者，只有所有者才能给互斥量解锁。
+一般情况下，对每一共享资源（可能有多个相关变量组成）会使用不同的互斥量， 每一线程在访问统一资源时将采用如下协议：
+针对共享资源锁定互斥量，访问共享资源，对互斥量解锁。
 
-如果多个线程试图执行这一块代码（一个临界区），事实上只有一个线程能够持有该互斥量（其他线程将遭到阻塞），即同时只有一个线程能够进入这段代码区域。 [互斥量](mutual_exclusion.png)
+如果多个线程试图执行这一块代码（一个临界区），事实上只有一个线程能够持有该互斥量（其他线程将遭到阻塞），即同时只有一个线程能够进入这段代码区域。 
 
--   互斥量的类型 pthread<sub>mutex</sub><sub>t</sub>
+![互斥量](/images/tiny-web-server/chapter-3-thread/mutual_exclusion.png)
 
-```C
+-   互斥量的类型 pthread_mutex_t
+
+```c
 //
 // Created by larry on 23-4-3.
 //
-
-/**
-
-
- */
 
 #include <stdio.h>
 #include <string.h>
@@ -635,38 +611,30 @@ int main() {
 #include <unistd.h>
 
 int tickets = 1000;
-
-// 创建一个互斥量
-pthread_mutex_t mutex;
-
+pthread_mutex_t mutex; // 创建一个互斥量
 
 void *sell_tickets(void *arg) {
   // sale
   while (1) {
-    // 加锁
-    pthread_mutex_lock(&mutex);
+    pthread_mutex_lock(&mutex);  // 加锁
 
     if (tickets > 0) {
       usleep(600);
       printf("child thread: %ld are selling %d ticket\n", pthread_self(), tickets);
       --tickets;
     } else {
-      // 解锁
-      pthread_mutex_unlock(&mutex);
+      pthread_mutex_unlock(&mutex);  // 解锁
       break;
     }
-
-    // 解锁
-    pthread_mutex_unlock(&mutex);
+    
+    pthread_mutex_unlock(&mutex);  // 解锁
   }
-
   return NULL;
 }
 
 int main() {
-  // 初始化互斥量
-  pthread_mutex_init(&mutex, NULL);
-
+  pthread_mutex_init(&mutex, NULL);  // 初始化互斥量
+ 
   pthread_t tid1, tid2, tid3;
 
   pthread_create(&tid1, NULL, sell_tickets, NULL);
@@ -676,11 +644,8 @@ int main() {
   pthread_join(tid1, NULL);
   pthread_join(tid2, NULL);
   pthread_join(tid3, NULL);
-
-
-  // 释放互斥量资源
-  pthread_mutex_destroy(&mutex);
-
+  
+  pthread_mutex_destroy(&mutex);  // 释放互斥量资源
   pthread_exit(NULL);
   return 0;
 }
@@ -691,9 +656,9 @@ int main() {
 
 ## 死锁
 
-有时，一个线程需要同时访问两个或更多不同的共享资源，而每个资源又都由不同的互斥量管理。当超过一个线程加锁同一组互斥量时，就有可能发生死锁。
+有时，一个线程需要同时访问两个或更多不同的共享资源，而每个资源又都由不同的互斥量管理。当超过一个线程加锁同一组互斥量时，就有可能发生`死锁`。
 
-两个或两个以上的进程在执行过程中，因争夺资源而造成的一种互相等待的现象，若无外力作用，它们都将无法推进下去。此时称系统处于死锁状态或系统产生了死锁。
+两个或两个以上的进程在执行过程中，因争夺资源而造成的一种互相等待的现象，若无外力作用，它们都将无法推进下去。此时称系统处于`死锁状态`或系统产生了死锁。
 
 死锁的几种场景：
 
@@ -701,7 +666,7 @@ int main() {
 -   重复加锁
 -   多线程多锁，抢占锁资源
 
-```C
+```c
 //
 // Created by larry on 23-4-3.
 //
@@ -758,14 +723,12 @@ int main() {
 }
 ```
 
-```C
+```c
 //
 // Created by larry on 23-4-3.
 //
 
-/**
-   死锁的情况 3
-*/
+// 死锁的情况 3
 
 #include <pthread.h>
 #include <stdio.h>
@@ -781,7 +744,6 @@ void *workA(void *arg) {
   pthread_mutex_lock(&mutex2);
 
   printf("workA.... \n");
-
   pthread_mutex_unlock(&mutex2);
   pthread_mutex_unlock(&mutex1);
   return NULL;
@@ -800,7 +762,6 @@ void *workB(void *arg) {
 }
 
 int main() {
-
   pthread_mutex_init(&mutex1, NULL);
   pthread_mutex_init(&mutex2, NULL);
 
@@ -808,43 +769,38 @@ int main() {
 
   pthread_create(&tid1, NULL, workA, NULL);
   pthread_create(&tid2, NULL, workB, NULL);
-
-  // 回收子线程资源
-  pthread_join(tid1, NULL);
+  
+  pthread_join(tid1, NULL); // 回收子线程资源
   pthread_join(tid2, NULL);
-
   pthread_mutex_destroy(&mutex1);
   pthread_mutex_destroy(&mutex2);
-
   pthread_exit(NULL);
-
-
   return 0;
 }
 ```
-
 
 <a id="orgfc88959"></a>
 
 ## 读写锁
 
-当一个线程已经持有互斥锁时，互斥锁将所有试图进入临界区的线程都阻塞住。但是考虑一种情形，当前持有互斥锁的线程只是要读访问共享资源，而同时 有其他几个线程也想读取这个共享资源，但是由于互斥锁的排它性，所有其他线程都无法获取锁，也就无法读访问共享资源了，但是实际上多个线程同时读 访问共享资源并不会导致问题。
+当一个线程已经持有互斥锁时，互斥锁将所有试图进入临界区的线程都阻塞住。但是考虑一种情形，当前持有互斥锁的线程只是要读访问共享资源，
+而同时 有其他几个线程也想读取这个共享资源，但是由于互斥锁的排它性，所有其他线程都无法获取锁，也就无法读访问共享资源了，
+但是实际上多个线程同时读 访问共享资源并不会导致问题。
 
-在对数据的读写操作中，更多的是读操作，写操作比较少，例如对数据库的读写应用。为了满足当前能够允许多个读出，但只允许一个写入的需求，线程提供了读写锁来实现。
+在对数据的读写操作中，更多的是读操作，写操作比较少，例如对数据库的读写应用。为了满足当前能够允许多个读出，但只允许一个写入的需求，线程提供了`读写锁`来实现。
 
-读写锁的特点：
+`读写锁`的特点：
 
 -   如果有其它线程读数据，则允许其它线程执行读操作，但不允许写操作。
 -   如果有其它线程写数据，则其它线程都不允许读写操作。
 -   写是独占的，写的优先级高。
 
-```C
+```c
 //
 // Created by larry on 23-4-3.
 //
 
 /**
-
    pthread_rwlock_t
 
    pthread_rwlock_init
@@ -922,30 +878,26 @@ int main() {
 
   //    pthread_mutex_destroy(&mutex);
   pthread_exit(NULL);
-
   return 0;
 }
 ```
-
 
 <a id="org7c54141"></a>
 
 ## 生产者和消费者模型
 
-生产者消费模型中的对象：
+`生产者消费模型`中的对象：
 
 -   生产者
 -   消费者
 -   容器
 
-```C
+```c
 //
 // Created by larry on 23-4-3.
 //
 
-/**
-   生产者消费者模型的简化版
-*/
+// 生产者消费者模型的简化版
 
 #include <stdio.h>
 #include <pthread.h>
@@ -1006,18 +958,16 @@ int main() {
   while (1) {
     sleep(10);
   }
-
   pthread_exit(NULL);
   return 0;
 }
 ```
 
-
 <a id="org7344390"></a>
 
 ## 条件变量
 
-```C
+```c
 //
 // Created by larry on 23-4-3.
 //
@@ -1099,8 +1049,6 @@ void *customer(void *arg) {
       pthread_cond_wait(&cond, &mutex);
       pthread_mutex_unlock(&mutex);
     }
-
-
   }
   return NULL;
 }
@@ -1135,12 +1083,11 @@ int main() {
 }
 ```
 
-
 <a id="org647f85f"></a>
 
 ## 信号量
 
-```C
+```c
 //
 // Created by larry on 23-4-3.
 //
@@ -1196,7 +1143,6 @@ int main() {
    }
 
 */
-
 
 #include <stdio.h>
 #include <pthread.h>
@@ -1281,12 +1227,9 @@ int main() {
 
   while (1) {
     sleep(10);
-
   }
 
-
   pthread_mutex_destroy(&mutex);
-
   pthread_exit(NULL);
   return 0;
 }
