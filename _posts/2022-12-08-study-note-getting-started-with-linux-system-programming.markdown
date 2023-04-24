@@ -45,11 +45,9 @@ tag: cpp linux system programming
 
 # Linux 系统编程入门
 
-
 <a id="orgcf2ef70"></a>
 
 ## 静态库与动态库
-
 
 <a id="org8407937"></a>
 
@@ -57,7 +55,6 @@ tag: cpp linux system programming
 
 -   linux: libxxx.a 保持 lib 前缀 和 .a 后缀
 -   Windows: libxxx.lib
-
 
 <a id="org181b542"></a>
 
@@ -72,7 +69,6 @@ ar rcs libxxx.a xxx.o xxx.o
 # -s 索引
 ```
 
-
 <a id="org6180f59"></a>
 
 ### 静态库使用
@@ -83,7 +79,6 @@ g++ main.cpp -I ./include  -l calc -L./lib -o test && ./test
 # -l 库名字
 # -L 库路径
 ```
-
 
 <a id="org40f12ef"></a>
 
@@ -108,7 +103,7 @@ g++ main.cpp -I ./include -L lib/ -l calc -o main && ./main
 
 ### 动态库使用
 
-程序启动之后，动态库会被动态加载到内存，通过 ldd (list dynamic dependencies) 命令检查动态库依赖关系
+程序启动之后，动态库会被动态加载到内存，通过 `ldd` (list dynamic dependencies) 命令检查动态库依赖关系。
 
 ```shell
 ldd main
@@ -121,9 +116,9 @@ ldd main
 # libgcc_s.so.1 => /lib/x86_64-linux-gnu/libgcc_s.so.1 (0x00007f47d088d000)
 ```
 
-1.  如何定位共享库文件呢？
+- 如何定位共享库文件呢？
 
-    当系统加载可执行代码时，能够知道其所依赖的库的名字，但还是需要知道绝对路径。
+    当系统加载可执行代码时，能够知道其所依赖的`库的名字`，但还是需要知道`绝对路径`。
     
     -   搜索路径
         -   elf 文件的 DT_RPATH 段
@@ -188,8 +183,8 @@ sudo ldconfig
 
 ## Makefile
 
--   Makefile 文件定义了一系列规则来编译指定文件。
--   make 一个命令行工具： 解释 Makefile 文件中指令的命令工具。
+-   `Makefile` 文件定义了一系列规则来编译指定文件。
+-   `make` 一个命令行工具： 解释 Makefile 文件中指令的命令工具。
 
 
 <a id="org480a533"></a>
@@ -198,13 +193,13 @@ sudo ldconfig
 
 -   makefile 或者 Makefile
 -   一个 Makefile 文件中可以有一个或多个规则
-    -   目标 &#x2026;: 依赖 &#x2026;
+    -   目标 &#x2026; : 依赖 &#x2026;
         -   命令 （shell 命令）
         -   &#x2026;
 
--   目标： 最终要生成的文件（伪目标除外）
--   依赖： 生成目标所需要的文件或是目标
--   命令： 通过执行命令对依赖操作生成目标（命令前必须 Tab 缩进）
+-   `目标`： 最终要生成的文件（伪目标除外）
+-   `依赖`： 生成目标所需要的文件或是目标
+-   `命令`： 通过执行命令对依赖操作生成目标（命令前必须 Tab 缩进）
 
 -   Makefile 中的其他规则一般都是为第一条规则服务的
 
@@ -228,10 +223,10 @@ sudo ldconfig
 
 -   自定义变量： 变量名=变量值 var=hello
 -   预定义变量：
-    -   AR: 归档维护程序的名称，默认值 ar
-    -   CC: C 编译器的名称， 默认值 cc
-    -   CXX: C++ 编译器的名称, 默认值 g++
-    -   $@: 目标的完整名称
+    -   `AR`: 归档维护程序的名称，默认值 ar
+    -   `CC`: C 编译器的名称， 默认值 cc
+    -   `CXX`: C++ 编译器的名称, 默认值 g++
+    -   `$@`: 目标的完整名称
 
 -   获取变量的值: $(变量名)
 
@@ -253,10 +248,10 @@ sudo ldconfig
     -   功能： 获取指定目录下指定类型的文件列表
     -   参数： PATTERN 指的是某个或多个目录下对应的某种类型的文件，如果有多个目录，一般使用空格间隔
     -   返回： 得到的若干个文件列表，文件名之间使用空格间隔
-    -   示例： $(wildcard **.cpp ./sub/**.cpp)
+    -   示例： $(wildcard \*\*.cpp ./sub/\*\*.cpp)
         -   返回值： a.cpp b.cpp c.cpp
 
--   $(patsubst <patten>,<replacement>,<text>)
+-   $(patsubst [patten],[replacement],[text])
     -   功能： 查找 text, 符合 patten, 用 replacement 替换
     -   pattern 可以包含通配符 %, 表示任意长度的字串。如果 replacement 中也包含 %， 那么replacement 中的 % 与 patten 代表字串相同，可以用 \\ 来转义。
     -   返回： 函数返回被替换过后的字符串
@@ -273,7 +268,7 @@ sudo ldconfig
 
 ### GDB 是什么？
 
--   GDB 是由 GUN 软件系统社区提供的调试工具， 同 GCC 配套组成了一套完整的开发环境， GDB 是 Linux 和许多类 Unix 系统中的标准开发环境。
+-   `GDB` 是由 GUN 软件系统社区提供的调试工具， 同 GCC 配套组成了一套完整的开发环境， GDB 是 Linux 和许多类 Unix 系统中的标准开发环境。
 
 
 <a id="orga483410"></a>
@@ -377,13 +372,13 @@ gdb test
 
 Linux 下的可执行文件格式： ELF
 
-| 用户区 | 内核区 |
-|---- |----- |
+| 用户区  | 内核区   |
+|------|-------|
 | 0-3G | 3G-4G |
 
 从左到右：
 
--   用户区
+-   `用户区`
     -   受保护的地址
     -   .text （代码段，二进制机器指令）
     -   .data (已初始化全局变量)
@@ -394,7 +389,7 @@ Linux 下的可执行文件格式： ELF
     -   命令行参数
     -   环境变量
 
--   内核区 内核空间是受保护的，用户不能对该空间进行读写操作，否则会出现段错误。
+-   `内核区` 内核空间是受保护的，用户不能对该空间进行读写操作，否则会出现段错误。
     -   内存管理
     -   进程管理
     -   设备驱动管理
@@ -405,7 +400,7 @@ Linux 下的可执行文件格式： ELF
 
 ### 文件描述符
 
--   PCB 进程控制块
+-   `PCB` `进程控制块`
 
 -   文件描述符
     -   0 -> stdin_fileno， 标准输入，默认打开
@@ -418,7 +413,7 @@ Linux 下的可执行文件格式： ELF
 
 ### open 打开文件
 
-```cpp
+```c
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -450,7 +445,6 @@ int main(int argc, char **argv) {
   }
 
   close(fd);
-
   return 0;
 }
 ```
@@ -460,7 +454,7 @@ int main(int argc, char **argv) {
 
 ### create 文件
 
-```cpp
+```c
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/stat.h>
@@ -477,7 +471,6 @@ int main() {
 
   close(fd);
   return 0;
-
 }
 ```
 
@@ -486,7 +479,7 @@ int main() {
 
 ### read 和 write
 
-```cpp
+```c
 #include <fcntl.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -506,35 +499,28 @@ int main() {
      #include <unistd.h>	     
      ssize_t write(int fd, const void *buf, size_t count);
   */
-
-
-  // 1. open 打开文件
-  int fd = open("read_write.c", O_RDONLY);
+  
+  int fd = open("read_write.c", O_RDONLY);  // 1. open 打开文件
   if(-1 == fd){
     perror("open err");
     return -1;
   }
 
   // 2. 创建一个新的文件（copy 文件）
-
   int dest_fd = open("cpy.txt", O_WRONLY| O_CREAT, 0777);
   if(-1 == dest_fd){
     perror("create err");
     return -1;
   }
-
-  // 3. 频繁的读写操作
-
-  char buffer[1024] = {0};
+  
+  char buffer[1024] = {0};  // 3. 频繁的读写操作
   int len = 0;
   while((len =   read(fd, buffer, sizeof(buffer))) > 0){
     write(dest_fd, buffer, len);
   }
-
-  // 4. 关闭文件
-  close(dest_fd);
+  
+  close(dest_fd);  // 4. 关闭文件
   close(fd);
-
   return 0;
 }
 ```
@@ -546,7 +532,7 @@ int main() {
 
 -   文件扩展功能
 
-```cpp
+```c
 /**
  // 标准C库函数
  #include <stdio.h>
@@ -597,9 +583,7 @@ int main() {
   }
 
   write(fd , " ", 1);
-
   close(fd);
-
   return 0;
 }
 ```
@@ -614,7 +598,7 @@ int main() {
 -   st_mode 变量： 一个16位的变量， 包含（文件类型， 特殊权限位，User, Group, Others）
 -   (st_mode & S_IFMT) == S_IFREG
 
-```cpp
+```c
 /**
    #include <sys/stat.h>
    #include <sys/types.h>
@@ -660,7 +644,7 @@ int main() {
 
 ### 模拟实现 ls -l
 
-```cpp
+```c
 #include <pwd.h>
 #include <stdio.h>
 #include <string.h>
@@ -669,27 +653,20 @@ int main() {
 #include <time.h>
 #include <unistd.h>
 
-/**
-
- */
 int main(int argc, char *argv[]) {
-
-  // 判断输入的参数是否正确
-  if (argc < 2) {
+  if (argc < 2) {  // 判断输入的参数是否正确
     printf("%s filename\n", argv[0]);
     return -1;
   }
-
-  // 通过 stat 过去文件的信息
-  struct stat buffstat;
+  
+  struct stat buffstat;  // 通过 stat 获取文件的信息
   int ret = stat(argv[1], &buffstat);
   if (-1 == ret) {
     perror("stat err");
     return -1;
   }
-
-  // 获取文件类型和文件权限
-  char permit[11] = {0};
+  
+  char permit[11] = {0};  // 获取文件类型和文件权限
   switch (buffstat.st_mode & S_IFMT) {
   case S_IFLNK:
     permit[0] = '1';
@@ -718,7 +695,6 @@ int main(int argc, char *argv[]) {
   }
 
   // 判断文件的访问权限
-
   permit[1] = (buffstat.st_mode & S_IRUSR) ? 'r' : '-';
   permit[2] = (buffstat.st_mode & S_IWUSR) ? 'w' : '-';
   permit[3] = (buffstat.st_mode & S_IXUSR) ? 'x' : '-';
@@ -761,7 +737,7 @@ int main(int argc, char *argv[]) {
 -   access
 -   判断文件存在
 
-```cpp
+```c
 /**
    #include <unistd.h>
 
@@ -790,7 +766,7 @@ int main() {
 
 -   chmod
 
-```cpp
+```c
 /**
    #include <sys/stat.h>
 
@@ -810,24 +786,20 @@ int main() {
     perror("chmod err");
     return -1;
   }
-
   return 0;
 }
 ```
 
 -   chown
 
-```cpp
-/**
-   #include <unistd.h>
-
-   int chown(const char *pathname, uid_t owner, gid_t group);
-*/
+```c
+#include <unistd.h>
+int chown(const char *pathname, uid_t owner, gid_t group);
 ```
 
 -   truncate
 
-```cpp
+```c
 /**
    #include <sys/types.h>
    #include <unistd.h>
@@ -845,7 +817,6 @@ int main() {
 #include <unistd.h>
 
 int main() {
-
   int ret = truncate("cpy.txt", 20);
   if (-1 == ret) {
     perror("truncate err");
@@ -866,7 +837,7 @@ int main() {
 -   chdir
 -   getcwd
 
-```cpp
+```c
 /**
  // mkdir
  #include<sys/stat.h>
@@ -910,26 +881,19 @@ int main() {
 #include <fcntl.h>
 
 int main(){
-
-  // 获取当前的工作目录
-  char buff[128];
+  char buff[128];  // 获取当前的工作目录
   getcwd(buff, sizeof(buff));
-
   printf("current work path:%s \n", buff);
-
-  // 修改工作目录
-  int ret = chdir("../");
-
+  
+  int ret = chdir("../");  // 修改工作目录
   int fd = open("chdir.txt", O_CREAT | O_RDWR, 0664);
   if(-1 == fd){
     perror("open err");
     return -1;
   }
-
   close(fd);
-
-  // 获取当前的工作目录
-  char buffCur[128];
+   
+  char buffCur[128];  // 获取当前的工作目录
   getcwd(buffCur, sizeof(buffCur));
   printf("now current work path: %s\n", buffCur);
   return 0;
@@ -945,7 +909,7 @@ int main(){
 -   readdir
 -   closedir
 
-```cpp
+```c
 /**
    #include <dirent.h>
    #include <sys/types.h>
@@ -987,16 +951,14 @@ int getFIleNumber(const char *path) {
   int total_number = 0;
 
   while ((prt = readdir(dir))) {
-    // 获取名称
-    char *dname = prt->d_name;
+    char *dname = prt->d_name;  // 获取名称
 
     // 忽略 ./ 和 ../ 两个目录
     if (strcmp(dname, ".") == 0 || strcmp(dname, "..") == 0) {
       continue;
     }
-
-    // 判断是否是普通文件还是目录
-    if (prt->d_type == DT_DIR) {
+    
+    if (prt->d_type == DT_DIR) {  // 判断是否是普通文件还是目录
       // 目录， 需要继续读取这个目录
       char newPath[256];
       sprintf(newPath, "%s/%s", path, dname);
@@ -1004,19 +966,16 @@ int getFIleNumber(const char *path) {
     }
 
     if (prt->d_type == DT_REG) {
-      /// 普通文件
-      ++total_number;
+      ++total_number;  // 普通文件
     }
   }
-
-  // 关闭目录
-  closedir(dir);
+  
+  closedir(dir);  // 关闭目录
   return total_number;
 }
 
 // 读取某个目录下文件的个数
 int main(int argc, char *argv[]) {
-
   if (argc < 2) {
     printf("%s path\n", argv[0]);
     return -1;
@@ -1024,7 +983,6 @@ int main(int argc, char *argv[]) {
 
   int file_numbers = getFIleNumber(argv[1]);
   printf("file numbers: %d\n", file_numbers);
-
   return 0;
 }
 ```
@@ -1036,7 +994,7 @@ int main(int argc, char *argv[]) {
 
 -   dup 复制文件描述符
 
-```cpp
+```c
 /**
    #include <unistd.h>
 
@@ -1063,7 +1021,6 @@ int main() {
   }
 
   printf("fd1: %d, fd2: %d\n", fd1, fd2);
-
   close(fd1);
 
   char *str = "helloworld";
@@ -1074,14 +1031,13 @@ int main() {
   }
 
   close(fd2);
-
   return 0;
 }
 ```
 
 -   dup2 重定向文件描述符
 
-```cpp
+```c
 /**
 
    #include <unistd.h>
@@ -1092,8 +1048,9 @@ int main() {
 
    int dup2(int oldfd, int newfd);
    作用： 重定向文件描述符，
-   oldfd 指向 a.txt, newfd 指向 b.txt, 调用函数成功后， newfd 和 b.txt
-   close, newfd 指向了a.txt。 oldfd 必须是一个有效的文件描述符, oldfd 和 newfd
+   oldfd 指向 a.txt, newfd 指向 b.txt,
+   调用函数成功后， newfd 和 b.txt close, newfd 指向了a.txt。 
+   oldfd 必须是一个有效的文件描述符, oldfd 和 newfd
    相同，相当于什么都没做
 */
 
@@ -1138,7 +1095,6 @@ int main() {
   close(fd1);
   //  close(fd2);
   close(fd);
-
   return 0;
 }
 ```
@@ -1150,7 +1106,7 @@ int main() {
 
 -   fcntl 复制文件描述符，设置、获取文件的状态标志
 
-```cpp
+```c
 /**
    #include <fcntl.h>
    #include <unistd.h>
@@ -1175,23 +1131,17 @@ int main() {
 #include <unistd.h>
 
 int main() {
-
   // 1. 复制文件描述符
-  /* int fd = open("1.txt", O_RDONLY); */
-
-  /* int ret = fcntl(fd , F_DUPFD); */
-
+  // int fd = open("1.txt", O_RDONLY);
+  // int ret = fcntl(fd , F_DUPFD);
   // 2. 修改或者获取文件状态 flag
-
   int fd = open("1.txt", O_RDWR);
   if (-1 == fd) {
     perror("open");
     return -1;
   }
 
-  // 获取文件描述符的状态
-
-  int flag = fcntl(fd, F_GETFL);
+  int flag = fcntl(fd, F_GETFL);  // 获取文件描述符的状态
   if (-1 == flag) {
     perror("fcntl");
     return -1;
@@ -1201,17 +1151,13 @@ int main() {
 
   // 修改文件描述符状态的 flag, 给 flag 加入 O_APPEND 这个标记
   int ret = fcntl(fd, F_SETFL, flag);
-
   if (-1 == ret) {
     perror("fcntl");
     return -1;
   }
   char str[] = "\nhello world from fcntl\n";
-
   write(fd, str, strlen(str));
-
   close(fd);
-
   return 0;
 }
 ```

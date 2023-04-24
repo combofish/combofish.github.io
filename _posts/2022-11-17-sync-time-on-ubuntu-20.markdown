@@ -33,7 +33,7 @@ timedatectl set-ntp on
 timedatectl set-ntp on
 sudo apt install ntp
 reboot  # 重启之后才能生效
------
+# -----
 date
 ```
 ## 博主的应用场景
